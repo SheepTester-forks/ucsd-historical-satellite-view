@@ -1,6 +1,8 @@
 import * as z from "zod";
 
-const basePath = "/tdb/Mapping/CampusMap/";
+const domain = "https://maps.ucsd.edu/";
+const basePath = "/tdb/Mapping/CampusMap";
+const TILE_SIZE = 256;
 
 const zoomInfoSchema = z.tuple([z.int(), z.string(), z.int(), z.int()]);
 export const parseZoomInfo = (json: unknown) =>
@@ -38,7 +40,7 @@ export const parseBackgroundInfo = (json: unknown) =>
       visible,
       offsetX,
       offsetY,
-      basePath: `${basePath}${name}/~${h}`,
+      timestamp: h,
       thumbnailPath: r,
       thumbOffsetX: j,
       thumbOffsetY: i,
@@ -46,6 +48,7 @@ export const parseBackgroundInfo = (json: unknown) =>
       // K,
       // J,
     }));
+export type BackgroundInfo = ReturnType<typeof parseBackgroundInfo>[number];
 
 const backgroundZoomSchema = z.tuple([z.int(), z.int(), z.int(), z.int()]);
 export const parseBackgroundZoom = (json: unknown) =>
@@ -55,8 +58,8 @@ export const parseBackgroundZoom = (json: unknown) =>
     .map(([prefix, postfix, height, width]) => ({
       backgroundId: prefix,
       zoom: postfix,
-      height,
-      width,
+      tileCountY: Math.ceil(height / TILE_SIZE),
+      tileCountX: Math.ceil(width / TILE_SIZE),
     }));
 
 const centerInfoSchema = z.tuple([
@@ -69,3 +72,15 @@ export const parseCenterInfo = (json: unknown) =>
     .array(centerInfoSchema)
     .parse(json)
     .map(([key, f, g]) => ({ key, tilesX: f, tilesY: g }));
+
+export const getTileUrl = (
+  layer: BackgroundInfo,
+  zoom: number,
+  x: number,
+  y: number,
+) =>
+  new URL(
+    // The ~ part seems to be ignored
+    `${basePath}/${layer.name}/${zoom}/${y}/${x}.png`,
+    domain,
+  );
