@@ -1711,8 +1711,8 @@ function T(a, b, d) {
 function V() {
   var a = document.getElementById("viewerWindow"),
     b = document.getElementById("drawingWindow-" + zoom),
-    d,
-    c,
+    _bgInfoKey,
+    __zoom,
     e,
     f = Math.floor(Math.max(-b.offsetLeft / tile, 0)),
     r = Math.floor(
@@ -1724,73 +1724,88 @@ function V() {
     ),
     b = zoom - 1;
   if ("Maps" == module || "pubMaps" == module) {
-    c = zoom;
+    __zoom = zoom;
     e = document.getElementById("viewerWindow");
-    var g = document.getElementById("drawingWindow-" + c),
-      l = c - 1;
-    for (d in backgroundInfo)
-      if (1 == backgroundInfo[d].visible) {
+    var g = document.getElementById("drawingWindow-" + __zoom),
+      _zoomlevel = __zoom - 1;
+    for (_bgInfoKey in backgroundInfo)
+      if (1 == backgroundInfo[_bgInfoKey].visible) {
         backgroundTop =
-          backgroundZoom[backgroundInfo[d].c + "-" + c].height *
-          backgroundInfo[d].offsetY;
+          backgroundZoom[backgroundInfo[_bgInfoKey].c + "-" + __zoom].height *
+          backgroundInfo[_bgInfoKey].offsetY;
         backgroundLeft =
-          backgroundZoom[backgroundInfo[d].c + "-" + c].width *
-          backgroundInfo[d].offsetX;
+          backgroundZoom[backgroundInfo[_bgInfoKey].c + "-" + __zoom].width *
+          backgroundInfo[_bgInfoKey].offsetX;
         backgroundCountX = Math.ceil(
-          backgroundZoom[backgroundInfo[d].c + "-" + c].width / tile,
+          backgroundZoom[backgroundInfo[_bgInfoKey].c + "-" + __zoom].width /
+            tile,
         );
         backgroundCountY = Math.ceil(
-          backgroundZoom[backgroundInfo[d].c + "-" + c].height / tile,
+          backgroundZoom[backgroundInfo[_bgInfoKey].c + "-" + __zoom].height /
+            tile,
         );
         for (
-          var k = Math.floor(
+          var _x = Math.floor(
               Math.max((-g.offsetLeft - backgroundLeft) / tile, 0),
             ),
-            m = Math.floor(
+            _xMax = Math.floor(
               Math.min(
                 (e.clientWidth - g.offsetLeft - backgroundLeft) / tile,
                 backgroundCountX - 1,
               ),
             ),
-            s = Math.floor(Math.max((-g.offsetTop - backgroundTop) / tile, 0)),
-            j = Math.floor(
+            _yMin = Math.floor(
+              Math.max((-g.offsetTop - backgroundTop) / tile, 0),
+            ),
+            _yMax = Math.floor(
               Math.min(
                 (e.clientHeight - g.offsetTop - backgroundTop) / tile,
                 backgroundCountY - 1,
               ),
             );
-          k <= m;
-          k += 1
+          _x <= _xMax;
+          _x += 1
         )
-          for (var E = s; E <= j; E += 1) {
-            var q =
-              "Image-" + backgroundInfo[d].name + "-" + k + "x" + E + "-" + c;
+          for (var _y = _yMin; _y <= _yMax; _y += 1) {
+            var _htmlTileId =
+              "Image-" +
+              backgroundInfo[_bgInfoKey].name +
+              "-" +
+              _x +
+              "x" +
+              _y +
+              "-" +
+              __zoom;
             w = Math.min(
               tile,
-              backgroundZoom[backgroundInfo[d].c + "-" + c].width - k * tile,
+              backgroundZoom[backgroundInfo[_bgInfoKey].c + "-" + __zoom]
+                .width -
+                _x * tile,
             );
             h = Math.min(
               tile,
-              backgroundZoom[backgroundInfo[d].c + "-" + c].height - E * tile,
+              backgroundZoom[backgroundInfo[_bgInfoKey].c + "-" + __zoom]
+                .height -
+                _y * tile,
             );
             source =
               path +
-              backgroundInfo[d].name +
+              backgroundInfo[_bgInfoKey].name +
               "/~" +
-              backgroundInfo[d].h +
+              backgroundInfo[_bgInfoKey].h +
               "/" +
-              l +
+              _zoomlevel +
               "/" +
-              E +
+              _y +
               "/" +
-              k +
+              _x +
               ext;
-            if (document.getElementById(q))
-              document.getElementById(q).src = source;
+            if (document.getElementById(_htmlTileId))
+              document.getElementById(_htmlTileId).src = source;
             else {
               var n = document.createElement("img");
-              n.setAttribute("id", q);
-              n.setAttribute("name", q);
+              n.setAttribute("id", _htmlTileId);
+              n.setAttribute("name", _htmlTileId);
               9 != document.documentMode &&
                 (window.addEventListener
                   ? ((n.style.visibility = "hidden"),
@@ -1799,8 +1814,8 @@ function V() {
               n.style.border = "0px none";
               n.style.margin = "0px";
               n.style.padding = "0px";
-              n.style.left = k * tile + "px";
-              n.style.top = E * tile + "px";
+              n.style.left = _x * tile + "px";
+              n.style.top = _y * tile + "px";
               n.style.width = w + "px";
               n.style.height = h + "px";
               n.style.position = "absolute";
@@ -1808,7 +1823,10 @@ function V() {
               n.src = source;
               document
                 .getElementById(
-                  "drawingWindow-" + backgroundInfo[d].name + "-" + c,
+                  "drawingWindow-" +
+                    backgroundInfo[_bgInfoKey].name +
+                    "-" +
+                    __zoom,
                 )
                 .appendChild(n);
             }
@@ -1816,57 +1834,68 @@ function V() {
       }
   }
   if ("Maps" == module || "pubMaps" == module) {
-    d = zoom;
-    c = document.getElementById("viewerWindow");
-    e = document.getElementById("drawingWindow-" + d);
-    var g = d - 1,
+    _bgInfoKey = zoom;
+    __zoom = document.getElementById("viewerWindow");
+    e = document.getElementById("drawingWindow-" + _bgInfoKey);
+    var g = _bgInfoKey - 1,
       x;
     for (x in labelInfo)
       if (1 == labelInfo[x].visible) {
         labelTop =
-          labelZoom[labelInfo[x].d + "-" + d].height * labelInfo[x].offsetY;
+          labelZoom[labelInfo[x].d + "-" + _bgInfoKey].height *
+          labelInfo[x].offsetY;
         labelLeft =
-          labelZoom[labelInfo[x].d + "-" + d].width * labelInfo[x].offsetX;
+          labelZoom[labelInfo[x].d + "-" + _bgInfoKey].width *
+          labelInfo[x].offsetX;
         labelCountX = Math.ceil(
-          labelZoom[labelInfo[x].d + "-" + d].width / tile,
+          labelZoom[labelInfo[x].d + "-" + _bgInfoKey].width / tile,
         );
         labelCountY = Math.ceil(
-          labelZoom[labelInfo[x].d + "-" + d].height / tile,
+          labelZoom[labelInfo[x].d + "-" + _bgInfoKey].height / tile,
         );
-        j = Math.floor(
+        _yMax = Math.floor(
           Math.max(
             (-e.offsetLeft - labelLeft) / tile - 1,
             (0 - labelLeft) / tile,
           ),
         );
-        l = Math.floor(
+        _zoomlevel = Math.floor(
           Math.min(
-            (c.clientWidth - e.offsetLeft - labelLeft) / tile + 1,
+            (__zoom.clientWidth - e.offsetLeft - labelLeft) / tile + 1,
             labelCountX - 1,
           ),
         );
-        m = Math.floor(
+        _xMax = Math.floor(
           Math.max((-e.offsetTop - labelTop) / tile - 1, (0 - labelTop) / tile),
         );
         for (
-          s = Math.floor(
+          _yMin = Math.floor(
             Math.min(
-              (c.clientHeight - e.offsetTop - labelTop) / tile + 1,
+              (__zoom.clientHeight - e.offsetTop - labelTop) / tile + 1,
               labelCountY - 1,
             ),
           );
-          j <= l;
-          j += 1
+          _yMax <= _zoomlevel;
+          _yMax += 1
         )
-          for (k = m; k <= s; k += 1)
-            ((E = "Image-" + labelInfo[x].name + "-" + j + "x" + k + "-" + d),
+          for (_x = _xMax; _x <= _yMin; _x += 1)
+            ((_y =
+              "Image-" +
+              labelInfo[x].name +
+              "-" +
+              _yMax +
+              "x" +
+              _x +
+              "-" +
+              _bgInfoKey),
               (w = Math.min(
                 tile,
-                labelZoom[labelInfo[x].d + "-" + d].width - j * tile,
+                labelZoom[labelInfo[x].d + "-" + _bgInfoKey].width -
+                  _yMax * tile,
               )),
               (h = Math.min(
                 tile,
-                labelZoom[labelInfo[x].d + "-" + d].height - k * tile,
+                labelZoom[labelInfo[x].d + "-" + _bgInfoKey].height - _x * tile,
               )),
               (source =
                 path +
@@ -1876,36 +1905,41 @@ function V() {
                 "/" +
                 g +
                 "/" +
-                k +
+                _x +
                 "/" +
-                j +
+                _yMax +
                 ext),
-              document.getElementById(E)
-                ? (document.getElementById(E).src = source)
-                : ((q = document.createElement("img")),
-                  q.setAttribute("id", E),
-                  q.setAttribute("name", E),
-                  (q.style.visibility = "hidden"),
+              document.getElementById(_y)
+                ? (document.getElementById(_y).src = source)
+                : ((_htmlTileId = document.createElement("img")),
+                  _htmlTileId.setAttribute("id", _y),
+                  _htmlTileId.setAttribute("name", _y),
+                  (_htmlTileId.style.visibility = "hidden"),
                   9 != document.documentMode &&
                     (window.addEventListener
-                      ? ((q.style.visibility = "hidden"),
-                        q.addEventListener("load", $, _captureMouseEvents))
-                      : ((q.style.visibility = "hidden"), (q.onload = $))),
-                  (q.style.border = "0px none"),
-                  (q.style.margin = "0px"),
-                  (q.style.padding = "0px"),
-                  (q.style.left = j * tile + "px"),
-                  (q.style.top = k * tile + "px"),
-                  (q.style.width = w + "px"),
-                  (q.style.height = h + "px"),
-                  (q.style.position = "absolute"),
-                  (q.style.zIndex = 0),
-                  (q.src = source),
+                      ? ((_htmlTileId.style.visibility = "hidden"),
+                        _htmlTileId.addEventListener(
+                          "load",
+                          $,
+                          _captureMouseEvents,
+                        ))
+                      : ((_htmlTileId.style.visibility = "hidden"),
+                        (_htmlTileId.onload = $))),
+                  (_htmlTileId.style.border = "0px none"),
+                  (_htmlTileId.style.margin = "0px"),
+                  (_htmlTileId.style.padding = "0px"),
+                  (_htmlTileId.style.left = _yMax * tile + "px"),
+                  (_htmlTileId.style.top = _x * tile + "px"),
+                  (_htmlTileId.style.width = w + "px"),
+                  (_htmlTileId.style.height = h + "px"),
+                  (_htmlTileId.style.position = "absolute"),
+                  (_htmlTileId.style.zIndex = 0),
+                  (_htmlTileId.src = source),
                   document
                     .getElementById(
-                      "drawingWindow-" + labelInfo[x].name + "-" + d,
+                      "drawingWindow-" + labelInfo[x].name + "-" + _bgInfoKey,
                     )
-                    .appendChild(q)));
+                    .appendChild(_htmlTileId)));
       }
   }
   for (; f <= r; f += 1)
@@ -1915,58 +1949,73 @@ function V() {
           "Floorplans" != module &&
           "pubMaps" != module &&
           ((g = "Image-" + f + "x" + x + "-" + zoom),
-          (c = Math.min(tile, zoomInfo[zoom].width - f * tile)),
-          (d = Math.min(tile, zoomInfo[zoom].height - x * tile)),
+          (__zoom = Math.min(tile, zoomInfo[zoom].width - f * tile)),
+          (_bgInfoKey = Math.min(tile, zoomInfo[zoom].height - x * tile)),
           (e = dig + "/" + b + "/" + x + "/" + f + ext),
           document.getElementById(g)
             ? (document.getElementById(g).src = e)
-            : ((l = document.createElement("img")),
-              l.setAttribute("id", g),
-              l.setAttribute("name", g),
+            : ((_zoomlevel = document.createElement("img")),
+              _zoomlevel.setAttribute("id", g),
+              _zoomlevel.setAttribute("name", g),
               9 != document.documentMode &&
                 (window.addEventListener
-                  ? ((l.style.visibility = "hidden"),
-                    l.addEventListener("load", $, _captureMouseEvents))
-                  : ((l.style.visibility = "hidden"), (l.onload = $))),
-              (l.style.border = "0px none"),
-              (l.style.margin = "0px"),
-              (l.style.padding = "0px"),
-              (l.style.left = f * tile + "px"),
-              (l.style.top = x * tile + "px"),
-              (l.style.width = c + "px"),
-              (l.style.height = d + "px"),
-              (l.style.position = "absolute"),
-              (l.style.zIndex = 0),
-              (l.src = e),
-              document.getElementById("drawingWindow-" + zoom).appendChild(l))),
+                  ? ((_zoomlevel.style.visibility = "hidden"),
+                    _zoomlevel.addEventListener("load", $, _captureMouseEvents))
+                  : ((_zoomlevel.style.visibility = "hidden"),
+                    (_zoomlevel.onload = $))),
+              (_zoomlevel.style.border = "0px none"),
+              (_zoomlevel.style.margin = "0px"),
+              (_zoomlevel.style.padding = "0px"),
+              (_zoomlevel.style.left = f * tile + "px"),
+              (_zoomlevel.style.top = x * tile + "px"),
+              (_zoomlevel.style.width = __zoom + "px"),
+              (_zoomlevel.style.height = _bgInfoKey + "px"),
+              (_zoomlevel.style.position = "absolute"),
+              (_zoomlevel.style.zIndex = 0),
+              (_zoomlevel.src = e),
+              document
+                .getElementById("drawingWindow-" + zoom)
+                .appendChild(_zoomlevel))),
         "Maps" == module || "Floorplans" == module || "pubMaps" == module)
       )
-        for (g in ((d = f), (c = x), (e = zoom), (g = undefined), layerInfo))
+        for (g in ((_bgInfoKey = f),
+        (__zoom = x),
+        (e = zoom),
+        (g = undefined),
+        layerInfo))
           if (1 == layerInfo[g].toggle && 1 == layerInfo[g].e) {
-            l = "Image-" + layerInfo[g].name + "-" + d + "x" + c + "-" + e;
-            k = e - 1;
-            s = m = 0;
-            j = "";
+            _zoomlevel =
+              "Image-" +
+              layerInfo[g].name +
+              "-" +
+              _bgInfoKey +
+              "x" +
+              __zoom +
+              "-" +
+              e;
+            _x = e - 1;
+            _yMin = _xMax = 0;
+            _yMax = "";
             if ("Maps" == module || "pubMaps" == module)
-              ((m = Math.min(
+              ((_xMax = Math.min(
                 tile,
-                zoomInfo[e + "-" + layerInfo[g].b].width - d * tile,
+                zoomInfo[e + "-" + layerInfo[g].b].width - _bgInfoKey * tile,
               )),
-                (s = Math.min(
+                (_yMin = Math.min(
                   tile,
-                  zoomInfo[e + "-" + layerInfo[g].b].height - c * tile,
+                  zoomInfo[e + "-" + layerInfo[g].b].height - __zoom * tile,
                 )),
-                (j = layerInfo[g].q
+                (_yMax = layerInfo[g].q
                   ? path +
                     layerInfo[g].b +
                     "/~" +
                     layerInfo[g].h +
                     "/_All/" +
-                    k +
+                    _x +
                     "/" +
-                    c +
+                    __zoom +
                     "/" +
-                    d +
+                    _bgInfoKey +
                     ext
                   : path +
                     layerInfo[g].b +
@@ -1975,42 +2024,50 @@ function V() {
                     "/" +
                     layerInfo[g].name +
                     "/" +
-                    k +
+                    _x +
                     "/" +
-                    c +
+                    __zoom +
                     "/" +
-                    d +
+                    _bgInfoKey +
                     ext));
             "Floorplans" == module &&
-              ((m = Math.min(tile, zoomInfo[e].width - d * tile)),
-              (s = Math.min(tile, zoomInfo[e].height - c * tile)),
-              (j =
-                path + layerInfo[g].name + "/" + k + "/" + c + "/" + d + ext));
-            document.getElementById(l)
-              ? (document.getElementById(l).src = j)
-              : ((k = document.createElement("img")),
-                k.setAttribute("id", l),
-                k.setAttribute("name", l),
+              ((_xMax = Math.min(tile, zoomInfo[e].width - _bgInfoKey * tile)),
+              (_yMin = Math.min(tile, zoomInfo[e].height - __zoom * tile)),
+              (_yMax =
+                path +
+                layerInfo[g].name +
+                "/" +
+                _x +
+                "/" +
+                __zoom +
+                "/" +
+                _bgInfoKey +
+                ext));
+            document.getElementById(_zoomlevel)
+              ? (document.getElementById(_zoomlevel).src = _yMax)
+              : ((_x = document.createElement("img")),
+                _x.setAttribute("id", _zoomlevel),
+                _x.setAttribute("name", _zoomlevel),
                 9 != document.documentMode &&
                   (window.addEventListener
-                    ? ((k.style.visibility = "hidden"),
-                      k.addEventListener("load", $, _captureMouseEvents))
-                    : ((k.style.visibility = "hidden"), (k.onload = $))),
-                (k.style.border = "0px none"),
-                (k.style.margin = "0px"),
-                (k.style.padding = "0px"),
-                (k.style.left = d * tile + "px"),
-                (k.style.top = c * tile + "px"),
-                (k.style.width = m + "px"),
-                (k.style.height = s + "px"),
-                (k.style.position = "absolute"),
-                (k.style.zIndex = 0),
-                (k.src = j),
+                    ? ((_x.style.visibility = "hidden"),
+                      _x.addEventListener("load", $, _captureMouseEvents))
+                    : ((_x.style.visibility = "hidden"), (_x.onload = $))),
+                (_x.style.border = "0px none"),
+                (_x.style.margin = "0px"),
+                (_x.style.padding = "0px"),
+                (_x.style.left = _bgInfoKey * tile + "px"),
+                (_x.style.top = __zoom * tile + "px"),
+                (_x.style.width = _xMax + "px"),
+                (_x.style.height = _yMin + "px"),
+                (_x.style.position = "absolute"),
+                (_x.style.zIndex = 0),
+                (_x.src = _yMax),
                 document
                   .getElementById(
                     "drawingWindow-" + layerInfo[g].name + "-" + e,
                   )
-                  .appendChild(k));
+                  .appendChild(_x));
           }
 }
 function _zoomImage(a, b, d) {
