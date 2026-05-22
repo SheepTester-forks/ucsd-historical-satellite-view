@@ -1,3 +1,5 @@
+// node scripts/index.ts
+
 import { createWriteStream } from "node:fs";
 import { access, constants, mkdir, rename, stat } from "node:fs/promises";
 import { Readable } from "node:stream";
