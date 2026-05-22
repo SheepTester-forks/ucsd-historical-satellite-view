@@ -1,2 +1,3 @@
 # ucsd-historical-satellite-view
-Historical aerial photos of UCSD's campus, archived from https://maps.ucsd.edu/mapping/viewer/default.htm in case it is affected by the TSS transition
+
+Historical aerial photos of UCSD's campus, archived from [Campus Map (2009)](https://maps.ucsd.edu/mapping/viewer/default.htm) in case it is affected by the TSS transition.
