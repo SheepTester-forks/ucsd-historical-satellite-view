@@ -20,6 +20,10 @@ import {
 } from "./lib/parse.ts";
 
 const [, , campus, tilesPath] = process.argv;
+if (!campus || !tilesPath) {
+  console.error("usage: node scripts/index.ts (la-jolla|hillcrest) <path>");
+  process.exit(1);
+}
 
 const basePath = (await readFile(`facts/${campus}/path.txt`, "utf-8")).trim();
 const backgroundInfo = parseBackgroundInfo(

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "[warn] use webp.ts instead"
+
 for aerial_path in tiles_png/*
 do
   aerial=$(basename $aerial_path)

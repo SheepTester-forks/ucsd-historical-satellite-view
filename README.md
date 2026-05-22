@@ -15,5 +15,6 @@ $ npm install
 $ node scripts/index.ts la-jolla tiles_png
 $ node scripts/index.ts hillcrest tiles_png_hillcrest
 # requires cwebp to be installed
-$ node scripts/webp.ts
+$ node scripts/webp.ts tiles_png tiles_webp
+$ node scripts/webp.ts tiles_png_hillcrest tiles_webp_hillcrest
 ```
