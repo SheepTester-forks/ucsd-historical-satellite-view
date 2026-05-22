@@ -1,4 +1,8 @@
-import { access, constants, mkdir, stat } from "node:fs/promises";
+import { createWriteStream } from "node:fs";
+import { access, constants, mkdir, rename, stat } from "node:fs/promises";
+import { Readable } from "node:stream";
+import { finished } from "node:stream/promises";
+import ProgressBar from "progress";
 import backgroundInfoJson from "../facts/backgroundInfo.json" with { type: "json" };
 import backgroundZoomJson from "../facts/backgroundZoom.json" with { type: "json" };
 import {
@@ -7,9 +11,6 @@ import {
   parseBackgroundZoom,
   type BackgroundInfo,
 } from "./lib/parse.ts";
-import { finished } from "node:stream/promises";
-import { Readable } from "node:stream";
-import { createWriteStream } from "node:fs";
 
 const backgroundInfo = parseBackgroundInfo(backgroundInfoJson).sort((a, b) =>
   a.name.localeCompare(b.name),
@@ -50,9 +51,14 @@ async function ensureTilePng(
     throw new TypeError(`no body: ${response.url}`);
   }
 
-  await finished(Readable.fromWeb(response.body).pipe(createWriteStream(path)));
+  await finished(
+    Readable.fromWeb(response.body).pipe(createWriteStream(`${path}~`)),
+  );
+  await rename(`${path}~`, path);
   return path;
 }
+
+const CONC_LIMIT = 10;
 
 let totalTotalSize = 0;
 for (const info of backgroundInfo) {
@@ -95,6 +101,29 @@ for (const info of backgroundInfo) {
   console.warn(
     `[${info.name}] ${getTileUrl(info, zoom, tileCountX - 1, tileCountY - 1).href}`,
   );
+
+  const progress = new ProgressBar(
+    `[${info.name}] :current/:total :bar :elapseds (:rate/s)`,
+    { total: tileCount },
+  );
+  let totalFetched = 0;
+  await Promise.all(
+    Array.from({ length: CONC_LIMIT }, async (_, i) => {
+      let nextId = 0;
+      for (let x = 0; x < tileCountX; x++) {
+        for (let y = 0; y < tileCountY; y++) {
+          const id = nextId++;
+          if (id % CONC_LIMIT !== i) {
+            continue;
+          }
+          await ensureTilePng(info, zoom, x, y);
+          totalFetched += (await stat(path)).size;
+          progress.tick();
+        }
+      }
+    }),
+  );
+  console.warn(`[${info.name}] fetched ${format.format(totalFetched)} bytes`);
 }
 
 console.warn(`${format.format(totalTotalSize)} bytes total total`);
