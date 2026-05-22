@@ -1,9 +1,9 @@
 # ucsd-historical-satellite-view
 
-| La Jolla Campus                                                                                             | Hillcrest                                                                                   |
-| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| ![La Jolla Campus Aerial Photo 1964](./archive/screenshots/La%20Jolla%20Campus%20Aerial%20Photo%201964.png) | ![Hillcrest Aerial Photo 1999](./archive/screenshots/Hillcrest%20Aerial%20Photo%201999.png) |
-| ![La Jolla Campus Aerial Photo 2012](./archive/screenshots/La%20Jolla%20Campus%20Aerial%20Photo%202012.png) | ![Hillcrest Aerial Photo 2012](./archive/screenshots/Hillcrest%20Aerial%20Photo%202012.png) |
+| La Jolla Campus                                                                                              | Hillcrest                                                                                    |
+| ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| ![La Jolla Campus Aerial Photo 1964](./archive/screenshots/La%20Jolla%20Campus%20Aerial%20Photo%201964.webp) | ![Hillcrest Aerial Photo 1999](./archive/screenshots/Hillcrest%20Aerial%20Photo%201999.webp) |
+| ![La Jolla Campus Aerial Photo 2012](./archive/screenshots/La%20Jolla%20Campus%20Aerial%20Photo%202012.webp) | ![Hillcrest Aerial Photo 2012](./archive/screenshots/Hillcrest%20Aerial%20Photo%202012.webp) |
 
 Historical aerial photos of UCSD's campus, archived from [Campus Map (2009)](https://maps.ucsd.edu/mapping/viewer/default.htm?mkey=1&selectedTab=2&background=15) in case it is affected by the TSS transition.
 
