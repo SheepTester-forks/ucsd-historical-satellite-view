@@ -1,74 +1,76 @@
-var J = !0,
+// https://maps.ucsd.edu/scripts/~1.81/Viewer/Maps/bin/mapsViewer.js
+
+var _layersOn = false,
   L = null,
-  M = !1;
-window.init = ba;
-window.centerDrawing = ca;
-window.remoteToggleHighlight = da;
-window.toggleHighlight = ea;
-window.toggleAllHighlights = fa;
-window.toggleOneHighlight = ga;
-window.simulateClick = N;
-window.toggleLayer = ha;
-window.checkPinOverlap = ia;
-window.revealMenu = ja;
-window.zoomImage = O;
-window.keyLiteClick = ka;
-window.toggleSection = la;
-window.moveKeyMap = ma;
-window.toggleBackground = na;
-window.toggleLabel = oa;
-window.search = pa;
-window.hideBubble = qa;
-window.setPrintLink = ra;
-window.moveLeftConsole = sa;
-function ba(
-  a,
-  b,
-  d,
-  c,
-  e,
-  f,
-  r,
-  p,
-  g,
-  l,
-  k,
-  m,
-  s,
-  j,
-  E,
-  q,
-  n,
-  x,
-  K,
-  S,
-  Ma,
-  y,
-  Na,
-  Oa,
-  aa,
+  _captureMouseEvents = true;
+window.init = _init;
+window.centerDrawing = _centerDrawing;
+window.remoteToggleHighlight = _remoteToggleHighlight;
+window.toggleHighlight = _toggleHighlight;
+window.toggleAllHighlights = _toggleAllHighlights;
+window.toggleOneHighlight = _toggleAllHighlights;
+window.simulateClick = _simulateClick;
+window.toggleLayer = _toggleLayer;
+window.checkPinOverlap = _checkPinOverlap;
+window.revealMenu = _revealMenu;
+window.zoomImage = _zoomImage;
+window.keyLiteClick = _keyLiteClick;
+window.toggleSection = _toggleSection;
+window.moveKeyMap = _moveKeyMap;
+window.toggleBackground = _toggleBackground;
+window.toggleLabel = _toggleLabel;
+window.search = _search;
+window.hideBubble = _hideBubble;
+window.setPrintLink = _setPrintLink;
+window.moveLeftConsole = _moveLeftConsole;
+function _init(
+  a = 0,
+  b = "open",
+  _leftConsoleButton = "closed",
+  c = "open",
+  _mkey = 1,
+  _tile = 256,
+  _path = "/tdb/Mapping/CampusMap/",
+  _base = "CampusMap",
+  _maxZoom = 7,
+  _noZoom = true,
+  _startingZoom = 0,
+  _xy = { x: ".5", y: ".5" },
+  _ext = ".png",
+  _zoomInfo = ["... OMITTED ..."],
+  _layerInfo = [],
+  _backgroundInfo = ["... OMITTED ..."],
+  _backgroundZoom = ["... OMITTED ..."],
+  _rightConsoleButton = [],
+  K = [],
+  _mapWidth = 13500,
+  _mapHeight = 12499.5,
+  _centerInfo = ["... OMITTED ..."],
+  _overlays = "",
+  _startingPopup = "0",
+  aa = 1,
 ) {
-  d = document.getElementById("leftConsoleButton");
-  x = document.getElementById("rightConsoleButton");
-  P(document, "ondragstart\x3dreturnFalse");
+  _leftConsoleButton = document.getElementById("leftConsoleButton");
+  _rightConsoleButton = document.getElementById("rightConsoleButton");
+  P(document, "ondragstart=returnFalse");
   P(
     document,
-    "mouseup\x3dmouseUp,touchend\x3dmouseUp,touchcancel\x3dmouseUp,mousemove\x3dcontinueMove,touchmove\x3dcontinueMove",
+    "mouseup=mouseUp,touchend=mouseUp,touchcancel=mouseUp,mousemove=continueMove,touchmove=continueMove",
   );
   document.getElementById("keyLite") &&
     (P(
       document.getElementById("keyLite"),
-      "mousedown\x3dsetClickPos,touchstart\x3dsetClickPos",
+      "mousedown=setClickPos,touchstart=setClickPos",
     ),
     P(
       document.getElementById("keyLiteShade"),
-      "mousedown\x3dsetClickPos,touchstart\x3dsetClickPos",
+      "mousedown=setClickPos,touchstart=setClickPos",
     ));
-  d && P(d, "click\x3dmoveLeftConsole");
-  x && P(x, "click\x3dmoveRightConsole");
+  _leftConsoleButton && P(_leftConsoleButton, "click=moveLeftConsole");
+  _rightConsoleButton && P(_rightConsoleButton, "click=moveRightConsole");
   P(
     document.getElementById("tabMenu_1_1_off"),
-    "mouseover\x3dtabOver,mouseout\x3dtabOut",
+    "mouseover=tabOver,mouseout=tabOut",
   );
   window.module = "pubMaps";
   window.pointerMode = "Nav";
@@ -76,30 +78,32 @@ function ba(
   window.lastPointerSubMode = "Nav";
   window.clickposx = 0;
   window.clickposy = 0;
-  window.startingPopup = Oa;
+  window.startingPopup = _startingPopup;
   window.currentPopup = 0;
   window.startingPinCount = 0;
   window.scrollstartleft = 0;
   window.scrollstarttop = 0;
-  window.ismousedown = M;
-  window.ismousedownkey = M;
-  window.keyliteclickoff = M;
+  window.ismousedown = _captureMouseEvents;
+  window.ismousedownkey = _captureMouseEvents;
+  window.keyliteclickoff = _captureMouseEvents;
   window.maxleft = 0;
   window.maxtop = 0;
-  window.path = r;
-  window.base = p;
+  window.path = _path;
+  window.base = _base;
   window.leftConsoleState = "open";
   window.keyMapState = "open";
   window.rightConsoleState = "closed";
-  "open" == keyMapState && -1 < navigator.appVersion.indexOf("Mobile") && ma();
+  "open" == keyMapState &&
+    -1 < navigator.appVersion.indexOf("Mobile") &&
+    _moveKeyMap();
   dojo.require("dojox.gfx");
-  window.maxZoom = g;
-  window.noZoom = l;
-  0 != k && (window.startingZoom = k);
-  window.xy = m;
-  window.tile = f;
-  window.ext = s + "?";
-  window.mkey = e;
+  window.maxZoom = _maxZoom;
+  window.noZoom = _noZoom;
+  0 != _startingZoom && (window.startingZoom = _startingZoom);
+  window.xy = _xy;
+  window.tile = _tile;
+  window.ext = _ext + "?";
+  window.mkey = _mkey;
   window.ImageSrc = {};
   window.ImageGet = {};
   window.countX = {};
@@ -110,187 +114,255 @@ function ba(
   window.backgroundZoom = {};
   window.labelInfo = {};
   window.labelZoom = {};
-  window.layersOn = J;
+  window.layersOn = _layersOn;
   window.canvases = [];
   window.canvasDrawn = [];
   window.shapes = {};
   window.shadeSection = "none";
   window.placeInfo = {};
   window.centerInfo = {};
-  window.mapWidth = S;
-  window.mapHeight = Ma;
+  window.mapWidth = _mapWidth;
+  window.mapHeight = _mapHeight;
   window.infoTypes = {};
-  window.overlays = Q(String(Na), ",");
-  for (e = 0; e < j.length; e++)
-    zoomInfo[1 * j[e][0] + 1 + "-" + j[e][1]] = {
-      height: j[e][2],
-      width: j[e][3],
+  window.overlays = _split(String(_overlays), ",");
+  for (_mkey = 0; _mkey < _zoomInfo.length; _mkey++)
+    zoomInfo[1 * _zoomInfo[_mkey][0] + 1 + "-" + _zoomInfo[_mkey][1]] = {
+      height: _zoomInfo[_mkey][2],
+      width: _zoomInfo[_mkey][3],
     };
-  for (e = 0; e < E.length; e++)
-    layerInfo[e] = {
-      name: E[e][0],
-      e: E[e][1],
-      toggle: E[e][2],
-      b: E[e][3],
-      q: E[e][4],
-      h: E[e][5],
+  for (_mkey = 0; _mkey < _layerInfo.length; _mkey++)
+    layerInfo[_mkey] = {
+      name: _layerInfo[_mkey][0],
+      e: _layerInfo[_mkey][1],
+      toggle: _layerInfo[_mkey][2],
+      b: _layerInfo[_mkey][3],
+      q: _layerInfo[_mkey][4],
+      h: _layerInfo[_mkey][5],
     };
-  for (e = 0; e < q.length; e++)
-    backgroundInfo[e] = {
-      name: q[e][0],
-      c: q[e][1],
-      visible: q[e][2],
-      offsetX: q[e][3],
-      offsetY: q[e][4],
-      h: q[e][11],
-      r: q[e][5],
-      j: q[e][6],
-      i: q[e][7],
-      I: q[e][8],
-      K: q[e][9],
-      J: q[e][10],
+  for (_mkey = 0; _mkey < _backgroundInfo.length; _mkey++)
+    backgroundInfo[_mkey] = {
+      name: _backgroundInfo[_mkey][0],
+      c: _backgroundInfo[_mkey][1],
+      visible: _backgroundInfo[_mkey][2],
+      offsetX: _backgroundInfo[_mkey][3],
+      offsetY: _backgroundInfo[_mkey][4],
+      h: _backgroundInfo[_mkey][11],
+      r: _backgroundInfo[_mkey][5],
+      j: _backgroundInfo[_mkey][6],
+      i: _backgroundInfo[_mkey][7],
+      I: _backgroundInfo[_mkey][8],
+      K: _backgroundInfo[_mkey][9],
+      J: _backgroundInfo[_mkey][10],
     };
-  for (e = 0; e < n.length; e++)
-    ((j = n[e][1] + 1),
-      (backgroundZoom[n[e][0] + "-" + j] = {
-        height: n[e][2],
-        width: n[e][3],
+  for (_mkey = 0; _mkey < _backgroundZoom.length; _mkey++)
+    ((_zoomInfo = _backgroundZoom[_mkey][1] + 1),
+      (backgroundZoom[_backgroundZoom[_mkey][0] + "-" + _zoomInfo] = {
+        height: _backgroundZoom[_mkey][2],
+        width: _backgroundZoom[_mkey][3],
       }));
-  for (e = 0; e < y.length; e++)
-    centerInfo[y[e][0]] = { f: y[e][1], g: y[e][2] };
-  for (n = 1; n <= maxZoom; n++) {
-    y = n;
-    q = E = 0;
+  for (_mkey = 0; _mkey < _centerInfo.length; _mkey++)
+    centerInfo[_centerInfo[_mkey][0]] = {
+      f: _centerInfo[_mkey][1],
+      g: _centerInfo[_mkey][2],
+    };
+  for (_backgroundZoom = 1; _backgroundZoom <= maxZoom; _backgroundZoom++) {
+    _centerInfo = _backgroundZoom;
+    _backgroundInfo = _layerInfo = 0;
     "Maps" == module || "pubMaps" == module
-      ? ((E = zoomInfo[y + "-Base"].width), (q = zoomInfo[y + "-Base"].height))
-      : ((E = zoomInfo[y].width), (q = zoomInfo[y].height));
-    j = document.createElement("div");
-    j.setAttribute("id", "drawingWindow-" + y);
-    j.setAttribute("name", "drawingWindow-" + y);
-    j.style.position = "absolute";
-    j.style.width = "" + E + "px";
-    j.style.height = "" + q + "px";
-    j.style.MozUserSelect = "none";
-    "sheets" == module && (j.style.border = "1px solid");
-    j.style.visibility = 1 == y ? "visible" : "hidden";
-    j.style.top = "0px";
-    j.style.left = "0px";
-    j.style.cursor = "url('/Media/Cursors/openhand_8_8.cur'), default";
-    j.style.zIndex = 0;
+      ? ((_layerInfo = zoomInfo[_centerInfo + "-Base"].width),
+        (_backgroundInfo = zoomInfo[_centerInfo + "-Base"].height))
+      : ((_layerInfo = zoomInfo[_centerInfo].width),
+        (_backgroundInfo = zoomInfo[_centerInfo].height));
+    _zoomInfo = document.createElement("div");
+    _zoomInfo.setAttribute("id", "drawingWindow-" + _centerInfo);
+    _zoomInfo.setAttribute("name", "drawingWindow-" + _centerInfo);
+    _zoomInfo.style.position = "absolute";
+    _zoomInfo.style.width = "" + _layerInfo + "px";
+    _zoomInfo.style.height = "" + _backgroundInfo + "px";
+    _zoomInfo.style.MozUserSelect = "none";
+    "sheets" == module && (_zoomInfo.style.border = "1px solid");
+    _zoomInfo.style.visibility = 1 == _centerInfo ? "visible" : "hidden";
+    _zoomInfo.style.top = "0px";
+    _zoomInfo.style.left = "0px";
+    _zoomInfo.style.cursor = "url('/Media/Cursors/openhand_8_8.cur'), default";
+    _zoomInfo.style.zIndex = 0;
     window.addEventListener
-      ? (j.addEventListener("mousedown", ta, M),
-        j.addEventListener("touchstart", ta, M))
-      : (j.onmousedown = ta);
-    document.getElementById("viewerWindow").appendChild(j);
+      ? (_zoomInfo.addEventListener(
+          "mousedown",
+          _handleMouseDown,
+          _captureMouseEvents,
+        ),
+        _zoomInfo.addEventListener(
+          "touchstart",
+          _handleMouseDown,
+          _captureMouseEvents,
+        ))
+      : (_zoomInfo.onmousedown = _handleMouseDown);
+    document.getElementById("viewerWindow").appendChild(_zoomInfo);
     window.addEventListener &&
-      (j.addEventListener("DOMMouseScroll", ua, M),
-      j.addEventListener("gesturestart", va, M),
-      j.addEventListener("gesturechange", wa, M),
-      j.addEventListener("gestureend", xa, M));
-    j.onmousewheel = ua;
+      (_zoomInfo.addEventListener(
+        "DOMMouseScroll",
+        _handleMouseScroll,
+        _captureMouseEvents,
+      ),
+      _zoomInfo.addEventListener(
+        "gesturestart",
+        _handleGestureStart,
+        _captureMouseEvents,
+      ),
+      _zoomInfo.addEventListener(
+        "gesturechange",
+        _handleGestureChange,
+        _captureMouseEvents,
+      ),
+      _zoomInfo.addEventListener(
+        "gestureend",
+        _handleGestureEnd,
+        _captureMouseEvents,
+      ));
+    _zoomInfo.onmousewheel = _handleMouseScroll;
     window.zoom = 1;
     if ("Maps" == module || "Floorplans" == module || "pubMaps" == module) {
-      var I = void 0;
-      for (I in layerInfo)
-        1 == layerInfo[I].toggle &&
-          ((j = document.createElement("div")),
-          j.setAttribute("id", "drawingWindow-" + layerInfo[I].name + "-" + y),
-          j.setAttribute("name", "layer"),
-          (j.style.position = "absolute"),
-          "Maps" == module || "pubMaps" == module
-            ? ((j.style.width =
-                "" + zoomInfo[y + "-" + layerInfo[I].b].width + "px"),
-              (j.style.height =
-                "" + zoomInfo[y + "-" + layerInfo[I].b].height + "px"))
-            : ((j.style.width = "" + E + "px"),
-              (j.style.height = "" + q + "px")),
-          (j.style.zIndex = layerInfo[I].L),
-          (j.style.visibility =
-            1 == y && 1 == layerInfo[I].e ? "visible" : "hidden"),
-          (j.style.top = "0px"),
-          (j.style.left = "0px"),
-          document.getElementById("drawingWindow-" + y).appendChild(j));
-    }
-    E = void 0;
-    E = 0 == thumbOffsetY && 0 == thumbOffsetX ? 0 : 1;
-    if ("Maps" == module || "pubMaps" == module) {
-      for (I in backgroundInfo)
-        ((j = document.createElement("div")),
-          j.setAttribute(
+      var _key = undefined;
+      for (_key in layerInfo)
+        1 == layerInfo[_key].toggle &&
+          ((_zoomInfo = document.createElement("div")),
+          _zoomInfo.setAttribute(
             "id",
-            "drawingWindow-" + backgroundInfo[I].name + "-" + y,
+            "drawingWindow-" + layerInfo[_key].name + "-" + _centerInfo,
           ),
-          j.setAttribute("name", "background"),
-          (j.style.position = "absolute"),
-          "undefined" == typeof backgroundZoom[backgroundInfo[I].c + "-" + y] &&
-            (backgroundZoom[backgroundInfo[I].c + "-" + y] = {
+          _zoomInfo.setAttribute("name", "layer"),
+          (_zoomInfo.style.position = "absolute"),
+          "Maps" == module || "pubMaps" == module
+            ? ((_zoomInfo.style.width =
+                "" +
+                zoomInfo[_centerInfo + "-" + layerInfo[_key].b].width +
+                "px"),
+              (_zoomInfo.style.height =
+                "" +
+                zoomInfo[_centerInfo + "-" + layerInfo[_key].b].height +
+                "px"))
+            : ((_zoomInfo.style.width = "" + _layerInfo + "px"),
+              (_zoomInfo.style.height = "" + _backgroundInfo + "px")),
+          (_zoomInfo.style.zIndex = layerInfo[_key].L),
+          (_zoomInfo.style.visibility =
+            1 == _centerInfo && 1 == layerInfo[_key].e ? "visible" : "hidden"),
+          (_zoomInfo.style.top = "0px"),
+          (_zoomInfo.style.left = "0px"),
+          document
+            .getElementById("drawingWindow-" + _centerInfo)
+            .appendChild(_zoomInfo));
+    }
+    _layerInfo = undefined;
+    _layerInfo = 0 == thumbOffsetY && 0 == thumbOffsetX ? 0 : 1;
+    if ("Maps" == module || "pubMaps" == module) {
+      for (_key in backgroundInfo)
+        ((_zoomInfo = document.createElement("div")),
+          _zoomInfo.setAttribute(
+            "id",
+            "drawingWindow-" + backgroundInfo[_key].name + "-" + _centerInfo,
+          ),
+          _zoomInfo.setAttribute("name", "background"),
+          (_zoomInfo.style.position = "absolute"),
+          "undefined" ==
+            typeof backgroundZoom[backgroundInfo[_key].c + "-" + _centerInfo] &&
+            (backgroundZoom[backgroundInfo[_key].c + "-" + _centerInfo] = {
               height: 0,
               width: 0,
             }),
-          (j.style.width =
-            "" + backgroundZoom[backgroundInfo[I].c + "-" + y].width + "px"),
-          (j.style.height =
-            "" + backgroundZoom[backgroundInfo[I].c + "-" + y].height + "px"),
-          (j.style.zIndex = -2),
-          1 == y && 1 == backgroundInfo[I].visible
-            ? ((j.style.visibility = "visible"),
-              0 == E &&
+          (_zoomInfo.style.width =
+            "" +
+            backgroundZoom[backgroundInfo[_key].c + "-" + _centerInfo].width +
+            "px"),
+          (_zoomInfo.style.height =
+            "" +
+            backgroundZoom[backgroundInfo[_key].c + "-" + _centerInfo].height +
+            "px"),
+          (_zoomInfo.style.zIndex = -2),
+          1 == _centerInfo && 1 == backgroundInfo[_key].visible
+            ? ((_zoomInfo.style.visibility = "visible"),
+              0 == _layerInfo &&
                 ((window.thumbOffsetY =
-                  backgroundInfo[I].i * backgroundInfo[I].offsetY),
+                  backgroundInfo[_key].i * backgroundInfo[_key].offsetY),
                 (window.thumbOffsetX =
-                  backgroundInfo[I].j * backgroundInfo[I].offsetX),
-                (E = 1)))
-            : (j.style.visibility = "hidden"),
+                  backgroundInfo[_key].j * backgroundInfo[_key].offsetX),
+                (_layerInfo = 1)))
+            : (_zoomInfo.style.visibility = "hidden"),
           (newTop =
-            backgroundZoom[backgroundInfo[I].c + "-" + y].height *
-            backgroundInfo[I].offsetY),
+            backgroundZoom[backgroundInfo[_key].c + "-" + _centerInfo].height *
+            backgroundInfo[_key].offsetY),
           (newLeft =
-            backgroundZoom[backgroundInfo[I].c + "-" + y].width *
-            backgroundInfo[I].offsetX),
-          (j.style.top = newTop + "px"),
-          (j.style.left = newLeft + "px"),
-          document.getElementById("drawingWindow-" + y).appendChild(j));
-      for (I in labelInfo)
-        ((j = document.createElement("div")),
-          j.setAttribute("id", "drawingWindow-" + labelInfo[I].name + "-" + y),
-          j.setAttribute("name", "label"),
-          (j.style.position = "absolute"),
-          "undefined" == typeof labelZoom[labelInfo[I].c + "-" + y] &&
-            (labelZoom[labelInfo[I].c + "-" + y] = { height: 0, width: 0 }),
-          (j.style.width =
-            "" + labelZoom[labelInfo[I].d + "-" + y].width + "px"),
-          (j.style.height =
-            "" + labelZoom[labelInfo[I].d + "-" + y].height + "px"),
-          (j.style.zIndex = 1001),
-          (j.style.visibility =
-            1 == y && 1 == labelInfo[I].visible ? "visible" : "hidden"),
+            backgroundZoom[backgroundInfo[_key].c + "-" + _centerInfo].width *
+            backgroundInfo[_key].offsetX),
+          (_zoomInfo.style.top = newTop + "px"),
+          (_zoomInfo.style.left = newLeft + "px"),
+          document
+            .getElementById("drawingWindow-" + _centerInfo)
+            .appendChild(_zoomInfo));
+      for (_key in labelInfo)
+        ((_zoomInfo = document.createElement("div")),
+          _zoomInfo.setAttribute(
+            "id",
+            "drawingWindow-" + labelInfo[_key].name + "-" + _centerInfo,
+          ),
+          _zoomInfo.setAttribute("name", "label"),
+          (_zoomInfo.style.position = "absolute"),
+          "undefined" ==
+            typeof labelZoom[labelInfo[_key].c + "-" + _centerInfo] &&
+            (labelZoom[labelInfo[_key].c + "-" + _centerInfo] = {
+              height: 0,
+              width: 0,
+            }),
+          (_zoomInfo.style.width =
+            "" + labelZoom[labelInfo[_key].d + "-" + _centerInfo].width + "px"),
+          (_zoomInfo.style.height =
+            "" +
+            labelZoom[labelInfo[_key].d + "-" + _centerInfo].height +
+            "px"),
+          (_zoomInfo.style.zIndex = 1001),
+          (_zoomInfo.style.visibility =
+            1 == _centerInfo && 1 == labelInfo[_key].visible
+              ? "visible"
+              : "hidden"),
           (newTop =
-            labelZoom[labelInfo[I].d + "-" + y].height * labelInfo[I].offsetY),
+            labelZoom[labelInfo[_key].d + "-" + _centerInfo].height *
+            labelInfo[_key].offsetY),
           (newLeft =
-            labelZoom[labelInfo[I].d + "-" + y].width * labelInfo[I].offsetX),
-          (j.style.top = newTop + "px"),
-          (j.style.left = newLeft + "px"),
-          document.getElementById("drawingWindow-" + y).appendChild(j));
+            labelZoom[labelInfo[_key].d + "-" + _centerInfo].width *
+            labelInfo[_key].offsetX),
+          (_zoomInfo.style.top = newTop + "px"),
+          (_zoomInfo.style.left = newLeft + "px"),
+          document
+            .getElementById("drawingWindow-" + _centerInfo)
+            .appendChild(_zoomInfo));
     }
-    0 == E && ((window.thumbOffsetX = 0), (window.thumbOffsetY = 0));
-    y = n;
+    0 == _layerInfo && ((window.thumbOffsetX = 0), (window.thumbOffsetY = 0));
+    _centerInfo = _backgroundZoom;
     "Maps" == module || "pubMaps" == module
-      ? ((countX[y] = Math.ceil(zoomInfo[y + "-Base"].width / tile)),
-        (countY[y] = Math.ceil(zoomInfo[y + "-Base"].height / tile)))
-      : ((countX[y] = Math.ceil(zoomInfo[y].width / tile)),
-        (countY[y] = Math.ceil(zoomInfo[y].height / tile)));
+      ? ((countX[_centerInfo] = Math.ceil(
+          zoomInfo[_centerInfo + "-Base"].width / tile,
+        )),
+        (countY[_centerInfo] = Math.ceil(
+          zoomInfo[_centerInfo + "-Base"].height / tile,
+        )))
+      : ((countX[_centerInfo] = Math.ceil(zoomInfo[_centerInfo].width / tile)),
+        (countY[_centerInfo] = Math.ceil(zoomInfo[_centerInfo].height / tile)));
   }
-  I = zoomInfo[maxZoom + "-Base"].width;
-  n = zoomInfo[maxZoom + "-Base"].height;
-  y = document.createElement("div");
-  y.setAttribute("id", "shapeWindow");
-  y.style.position = "absolute";
-  y.style.width = "" + I + "px";
-  y.style.height = "" + n + "px";
-  y.style.zIndex = -1;
-  document.getElementById("drawingWindow-1").appendChild(y);
-  window.shapeWindow = y;
-  window.shapeSurface = dojox.gfx.createSurface(y, I, n);
+  _key = zoomInfo[maxZoom + "-Base"].width;
+  _backgroundZoom = zoomInfo[maxZoom + "-Base"].height;
+  _centerInfo = document.createElement("div");
+  _centerInfo.setAttribute("id", "shapeWindow");
+  _centerInfo.style.position = "absolute";
+  _centerInfo.style.width = "" + _key + "px";
+  _centerInfo.style.height = "" + _backgroundZoom + "px";
+  _centerInfo.style.zIndex = -1;
+  document.getElementById("drawingWindow-1").appendChild(_centerInfo);
+  window.shapeWindow = _centerInfo;
+  window.shapeSurface = dojox.gfx.createSurface(
+    _centerInfo,
+    _key,
+    _backgroundZoom,
+  );
   shapeSurface.rawNode.style.zIndex = -1;
   "undefined" == typeof tabRows && (window.F = {});
   "undefined" == typeof tabRowTabs && (window.D = {});
@@ -298,56 +370,66 @@ function ba(
   "undefined" == typeof tabSelectedRow && (window.G = {});
   tabSelectedTab.tabMenu = "1_1";
   tabSelectedRow.tabMenu = "1";
-  n = I = 1;
-  for (j = y = 0; document.getElementById("tabMenu_" + I); ) {
-    for (y++; document.getElementById("tabMenu_" + I + "_" + n); ) (j++, n++);
-    tabRowTabs["tabMenu_" + y] = j;
-    I++;
-    j = 0;
-    n = 1;
+  _backgroundZoom = _key = 1;
+  for (
+    _zoomInfo = _centerInfo = 0;
+    document.getElementById("tabMenu_" + _key);
+  ) {
+    for (
+      _centerInfo++;
+      document.getElementById("tabMenu_" + _key + "_" + _backgroundZoom);
+    )
+      (_zoomInfo++, _backgroundZoom++);
+    tabRowTabs["tabMenu_" + _centerInfo] = _zoomInfo;
+    _key++;
+    _zoomInfo = 0;
+    _backgroundZoom = 1;
   }
-  tabRows.tabMenu = y;
+  tabRows.tabMenu = _centerInfo;
   document.getElementById("tabMenu_1_1_content").style.display = "block";
-  I = 1;
-  0 == I && (I = tabRows.tabMenu);
-  n = document.getElementById("tabMenu_" + I)
-    ? document.getElementById("tabMenu_" + I)
+  _key = 1;
+  0 == _key && (_key = tabRows.tabMenu);
+  _backgroundZoom = document.getElementById("tabMenu_" + _key)
+    ? document.getElementById("tabMenu_" + _key)
     : 0;
-  0 == n &&
-    ((n = document.getElementById("tabMenu_1")
+  0 == _backgroundZoom &&
+    ((_backgroundZoom = document.getElementById("tabMenu_1")
       ? document.getElementById("tabMenu_1")
       : 0),
-    (I = 1));
-  0 != n &&
+    (_key = 1));
+  0 != _backgroundZoom &&
     ((document.getElementById(
       "tabMenu_" + tabSelectedRow.tabMenu,
     ).style.display = "none"),
-    (document.getElementById("tabMenu_" + I).style.display = "block"),
-    (tabSelectedRow.tabMenu = I));
+    (document.getElementById("tabMenu_" + _key).style.display = "block"),
+    (tabSelectedRow.tabMenu = _key));
   ya("tabMenu", 1, 1);
   ya("tabMenu", 1, aa);
-  R();
+  _handleResize();
   za("bldgDiv");
   za("mapDiv");
-  "closed" == c && sa();
-  "closed" == b && ma();
+  "closed" == c && _moveLeftConsole();
+  "closed" == b && _moveKeyMap();
   0 < a && (document.getElementById("sheetsDiv").scrollTop = a);
   if (noZoom) {
     b = document.getElementById("viewerWindow");
     a = b.clientHeight;
     b = b.clientWidth;
     c = 1e8;
-    for (I = aa = 1; I <= maxZoom; I++)
-      ((y = document.getElementById("drawingWindow-" + I)),
-        (n = y.clientHeight),
-        (j = y.clientWidth),
-        (y = Math.abs(n - a) + Math.abs(j - b)),
-        y < c && n < a && j < b && ((c = y), (aa = I)));
-    O(aa, 0, 0);
-  } else O(startingZoom, 0, 0);
-  ca();
-  window.onresize = R;
-  window.onorientationchange = R;
+    for (_key = aa = 1; _key <= maxZoom; _key++)
+      ((_centerInfo = document.getElementById("drawingWindow-" + _key)),
+        (_backgroundZoom = _centerInfo.clientHeight),
+        (_zoomInfo = _centerInfo.clientWidth),
+        (_centerInfo = Math.abs(_backgroundZoom - a) + Math.abs(_zoomInfo - b)),
+        _centerInfo < c &&
+          _backgroundZoom < a &&
+          _zoomInfo < b &&
+          ((c = _centerInfo), (aa = _key)));
+    _zoomImage(aa, 0, 0);
+  } else _zoomImage(startingZoom, 0, 0);
+  _centerDrawing();
+  window.onresize = _handleResize;
+  window.onorientationchange = _handleResize;
   document.getElementById("linkMenu").style.visibility = "hidden";
   document.getElementById("embedMenu").style.visibility = "hidden";
 }
@@ -358,15 +440,15 @@ function Aa(a) {
         (document.getElementById("background-" + backgroundInfo[b].c).src =
           "/Media/Icons/RadioButton_16x16.gif");
   if ("bldg" == a) {
-    a = "bldgInfo.htm?mkey\x3d" + mkey;
+    a = "bldgInfo.htm?mkey=" + mkey;
     var d = Ba();
-    d.open("GET", a, J);
+    d.open("GET", a, _layersOn);
     d.onreadystatechange = function () {
       if (4 == d.readyState)
         if (200 == d.status) {
           var a = d.responseText;
           if (a != L) {
-            var a = Q(String(a), "~"),
+            var a = _split(String(a), "~"),
               b = eval("(" + a[0] + ")");
             window.geoJSON = eval("(" + a[1] + ")");
             for (a = 0; a < b.length; a++)
@@ -387,7 +469,7 @@ function Aa(a) {
             }
             for (a in overlays)
               document.getElementById(overlays[a] + "-Off") &&
-                N(overlays[a] + "-Off");
+                _simulateClick(overlays[a] + "-Off");
           }
         } else
           404 == d.status
@@ -398,9 +480,9 @@ function Aa(a) {
   }
 }
 function za(a) {
-  var b = a + ".htm" + ("?mkey\x3d" + mkey),
+  var b = a + ".htm" + ("?mkey=" + mkey),
     d = Ba();
-  d.open("GET", b, J);
+  d.open("GET", b, _layersOn);
   d.onreadystatechange = function () {
     if (4 == d.readyState)
       if (200 == d.status) {
@@ -409,7 +491,7 @@ function za(a) {
           document.getElementById(a) &&
           ((document.getElementById(a).innerHTML = b),
           "bldgDiv" == a ? Aa("bldg") : "mapDiv" == a && Aa("maps"),
-          R());
+          _handleResize());
       } else
         404 == d.status
           ? alert("Request URL does not exist")
@@ -417,7 +499,7 @@ function za(a) {
   };
   d.send(L);
 }
-function sa() {
+function _moveLeftConsole() {
   var a = document.getElementById("leftConsole"),
     b = document.getElementById("drawingWindow-" + zoom),
     d = document.getElementById("leftConsoleButton"),
@@ -444,11 +526,11 @@ function sa() {
   d.style.backgroundImage = e;
   d.style.borderLeft = f;
   d.style.borderTop = r;
-  R();
+  _handleResize();
 }
-function ma(a) {
+function _moveKeyMap(a) {
   a || (a = window.event);
-  a.cancelBubble = J;
+  a.cancelBubble = _layersOn;
   a.stopPropagation && a.stopPropagation();
   a = document.getElementById("thumbBorder");
   var b = document.getElementById("thumb"),
@@ -474,7 +556,7 @@ function ma(a) {
   a.style.bottom = p + "px";
   a.style.right = g + "px";
 }
-function R() {
+function _handleResize() {
   var a = 0,
     b = 0,
     d = Ca(),
@@ -585,7 +667,7 @@ function U() {
     1 == backgroundInfo[r].visible && (f = backgroundInfo[r].c);
   var p = 0;
   for (r in labelInfo) 1 == labelInfo[r].visible && (p = labelInfo[r].d);
-  var g = Q(String(tabSelectedTab.tabMenu), "_"),
+  var g = _split(String(tabSelectedTab.tabMenu), "_"),
     l = "",
     k = 0,
     m = [],
@@ -626,65 +708,64 @@ function U() {
         }
   0 == k && (l = "None");
   r = "";
-  0 != currentPopup &&
-    (r = "\x26openPin\x3d" + currentPopup.replace("%", "%25"));
+  0 != currentPopup && (r = "\x26openPin=" + currentPopup.replace("%", "%25"));
   j =
     document.location.protocol +
     "//" +
     document.location.hostname +
     document.location.pathname +
-    "?mkey\x3d" +
+    "?mkey=" +
     mkey +
-    "\x26lc\x3d" +
+    "\x26lc=" +
     leftConsoleState +
-    "\x26km\x3d" +
+    "\x26km=" +
     keyMapState +
-    "\x26rc\x3d" +
+    "\x26rc=" +
     rightConsoleState +
-    "\x26zoom\x3d" +
+    "\x26zoom=" +
     zoom +
-    "\x26X\x3d" +
+    "\x26X=" +
     d +
-    "\x26Y\x3d" +
+    "\x26Y=" +
     e +
-    "\x26layers\x3d" +
+    "\x26layers=" +
     c +
-    "\x26background\x3d" +
+    "\x26background=" +
     f +
-    "\x26label\x3d" +
+    "\x26label=" +
     p +
-    "\x26overlays\x3d" +
+    "\x26overlays=" +
     l +
-    "\x26selectedTab\x3d" +
+    "\x26selectedTab=" +
     g[1] +
     r;
   e =
-    "\x3ciframe width\x3d'600' height\x3d'600' frameborder\x3d'0' scrolling\x3d'no' marginheight\x3d'0' marginwidth\x3d'0' src\x3d'" +
+    "\x3ciframe width='600' height='600' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src='" +
     document.location.protocol +
     "//" +
     document.location.hostname +
     document.location.pathname +
-    "embed/embed.htm?mkey\x3d" +
+    "embed/embed.htm?mkey=" +
     mkey +
-    "\x26lc\x3d" +
+    "\x26lc=" +
     leftConsoleState +
-    "\x26km\x3d" +
+    "\x26km=" +
     keyMapState +
-    "\x26rc\x3d" +
+    "\x26rc=" +
     rightConsoleState +
-    "\x26zoom\x3d" +
+    "\x26zoom=" +
     zoom +
-    "\x26X\x3d" +
+    "\x26X=" +
     d +
-    "\x26Y\x3d" +
+    "\x26Y=" +
     e +
-    "\x26layers\x3d" +
+    "\x26layers=" +
     c +
-    "\x26background\x3d" +
+    "\x26background=" +
     f +
-    "\x26label\x3d" +
+    "\x26label=" +
     p +
-    "\x26overlays\x3d" +
+    "\x26overlays=" +
     l +
     r +
     "'\x3e\x3c/iframe\x3e";
@@ -692,7 +773,7 @@ function U() {
   a && (a.value = j);
   b && (b.value = e);
 }
-function ja(a) {
+function _revealMenu(a) {
   targ = document.getElementById(a + "Button");
   var b;
   b = targ;
@@ -715,7 +796,7 @@ function ja(a) {
   } else a.style.visibility = "hidden";
   U();
 }
-function ra(a) {
+function _setPrintLink(a) {
   var b = document.getElementById("viewerWindow"),
     d = document.getElementById("drawingWindow-" + zoom),
     c =
@@ -778,37 +859,36 @@ function ra(a) {
         }
   0 == g && (p = "None");
   f = "";
-  0 != currentPopup &&
-    (f = "\x26openPin\x3d" + currentPopup.replace("%", "%25"));
+  0 != currentPopup && (f = "\x26openPin=" + currentPopup.replace("%", "%25"));
   a.href =
-    "print.htm?mkey\x3d" +
+    "print.htm?mkey=" +
     mkey +
-    "\x26lc\x3d" +
+    "\x26lc=" +
     leftConsoleState +
-    "\x26km\x3d" +
+    "\x26km=" +
     keyMapState +
-    "\x26rc\x3d" +
+    "\x26rc=" +
     rightConsoleState +
-    "\x26zoom\x3d" +
+    "\x26zoom=" +
     zoom +
-    "\x26X\x3d" +
+    "\x26X=" +
     b +
-    "\x26Y\x3d" +
+    "\x26Y=" +
     c +
-    "\x26layers\x3d" +
+    "\x26layers=" +
     d +
-    "\x26background\x3d" +
+    "\x26background=" +
     e +
-    "\x26label\x3d" +
+    "\x26label=" +
     r +
-    "\x26overlays\x3d" +
+    "\x26overlays=" +
     p +
     f;
 }
-function ea(a) {
+function _toggleHighlight(a) {
   a = a || window.event;
   a.target ? (targ = a.target) : a.srcElement && (targ = a.srcElement);
-  a = Q(String(targ.className), "-");
+  a = _split(String(targ.className), "-");
   if ("All" != a[1])
     if ("Off" == a[2]) {
       for (var b = 1; b <= maxZoom; b++)
@@ -836,7 +916,7 @@ function ea(a) {
       );
       for (var c in placeInfo)
         if (placeInfo[c].type == a[0]) {
-          var e = Q(String(placeInfo[c].code), ":");
+          var e = _split(String(placeInfo[c].code), ":");
           if (e[1])
             for (var f in e)
               if (e[f] == a[1])
@@ -900,7 +980,7 @@ function ea(a) {
     );
   }
 }
-function fa(a, b, d) {
+function _toggleAllHighlights(a, b, d) {
   if ("on" == d)
     for (var c in placeInfo) {
       if (
@@ -960,7 +1040,7 @@ function fa(a, b, d) {
                 )),
         placeInfo[c].type == a)
       ) {
-        d = Q(String(placeInfo[c].a), "%");
+        d = _split(String(placeInfo[c].a), "%");
         b = "";
         b =
           "2" == d[1]
@@ -1050,7 +1130,7 @@ function fa(a, b, d) {
               Y(placeInfo[c].a)),
         placeInfo[c].type == a)
       ) {
-        d = Q(String(placeInfo[c].a), "%");
+        d = _split(String(placeInfo[c].a), "%");
         b =
           "2" == d[1]
             ? "Parking"
@@ -1071,7 +1151,7 @@ function fa(a, b, d) {
     (Ha(), (currentPopup = 0));
   U();
 }
-function ga(a, b, d, c) {
+function _toggleAllHighlights(a, b, d, c) {
   d = "";
   if ("on" == c) {
     d = "both";
@@ -1089,7 +1169,7 @@ function ga(a, b, d, c) {
       q;
     for (q in placeInfo)
       if (placeInfo[q].code == b && placeInfo[q].type == a) {
-        var n = Q(String(placeInfo[q].a), "%"),
+        var n = _split(String(placeInfo[q].a), "%"),
           x = "",
           x =
             "2" == n[1]
@@ -1209,7 +1289,7 @@ function ga(a, b, d, c) {
   } else
     for (q in placeInfo)
       if (placeInfo[q].code == b && placeInfo[q].type == a) {
-        n = Q(String(placeInfo[q].a), "%");
+        n = _split(String(placeInfo[q].a), "%");
         x =
           "2" == n[1]
             ? "Parking"
@@ -1230,10 +1310,10 @@ function ga(a, b, d, c) {
     (Ha(), (currentPopup = 0));
   U();
 }
-function la(a) {
+function _toggleSection(a) {
   a = a || window.event;
   a.target ? (targ = a.target) : a.srcElement && (targ = a.srcElement);
-  a = Q(String(targ.id), ":");
+  a = _split(String(targ.id), ":");
   "Off" == a[1] &&
     ((document.getElementById(a[0] + "InnerDiv").style.display = "block"),
     targ.setAttribute("id", a[0] + ":On"),
@@ -1242,18 +1322,18 @@ function la(a) {
     ((document.getElementById(a[0] + "InnerDiv").style.display = "none"),
     targ.setAttribute("id", a[0] + ":Off"),
     (targ.src = "/Media/Trees/Expand_16x16.gif"));
-  R();
+  _handleResize();
 }
 function Ia(a) {
   a = a || window.event;
   a.target ? (targ = a.target) : a.srcElement && (targ = a.srcElement);
-  var b = Q(String(targ.id), "-");
+  var b = _split(String(targ.id), "-");
   if (
     "polyline" != String(targ.nodeName) &&
     "shape" != String(targ.nodeName) &&
     "pin" != String(targ.id.substr(0, 3))
   ) {
-    var b = Q(String(clickPoly.id), "-"),
+    var b = _split(String(clickPoly.id), "-"),
       d = document.getElementById("shapeWindow");
     d.style.zIndex = 1e4;
     targ = document.elementFromPoint(a.pageX, a.pageY);
@@ -1286,10 +1366,10 @@ function Ia(a) {
           ).style.visibility = "");
     currentPopup = b[1];
     U();
-    c = Q(String(b[1]), "%");
-    c = "polyData" + c[1] + ".htm?bkey\x3d" + c[0];
+    c = _split(String(b[1]), "%");
+    c = "polyData" + c[1] + ".htm?bkey=" + c[0];
     var e = Ba();
-    e.open("GET", c, J);
+    e.open("GET", c, _layersOn);
     e.onreadystatechange = function (d, c) {
       if (4 == e.readyState)
         if (200 == e.status) {
@@ -1389,7 +1469,7 @@ function Ia(a) {
     e.send(L);
   }
 }
-function ia(a, b) {
+function _checkPinOverlap(a, b) {
   a = document.getElementById(a);
   b = document.getElementById(b);
   var d = document.getElementById("viewerWindow");
@@ -1399,7 +1479,7 @@ function ia(a, b) {
     T(b, d.clientWidth - a.offsetLeft - a.clientWidth - 10, b.offsetTop);
   V();
 }
-function qa(a) {
+function _hideBubble(a) {
   for (var b = 1; b <= maxZoom; b++)
     document.getElementById("pindiv-" + a + "-" + b) &&
       (document.getElementById("pindiv-" + a + "-" + b).style.visibility = "");
@@ -1407,17 +1487,17 @@ function qa(a) {
   U();
   Fa("bubble-1");
 }
-function pa(a) {
+function _search(a) {
   a = a || window.event;
   a.target ? (targ = a.target) : a.srcElement && (targ = a.srcElement);
-  a = "search.htm?mkey\x3d" + mkey + "\x26Keywords\x3d" + targ.value;
+  a = "search.htm?mkey=" + mkey + "\x26Keywords=" + targ.value;
   var b = Ba();
-  b.open("GET", a, J);
+  b.open("GET", a, _layersOn);
   b.onreadystatechange = function () {
     if (4 == b.readyState)
       if (200 == b.status) {
         var a = b.responseText,
-          a = Q(String(a), ":");
+          a = _split(String(a), ":");
         if (
           a[1] != L &&
           a[0] == document.getElementById("Keywords").value &&
@@ -1428,7 +1508,7 @@ function pa(a) {
             e;
           for (e in a) 0 != e && (c += a[e]);
           searchTable.innerHTML = c;
-          R();
+          _handleResize();
         }
       } else
         404 == b.status
@@ -1437,27 +1517,27 @@ function pa(a) {
   };
   b.send(L);
 }
-function da(a, b) {
+function _remoteToggleHighlight(a, b) {
   document.getElementById(a + "-" + b + "-Off")
-    ? (N(a + "-" + b + "-Off"),
-      document.getElementById(a + ":Off") && N(a + ":Off"),
+    ? (_simulateClick(a + "-" + b + "-Off"),
+      document.getElementById(a + ":Off") && _simulateClick(a + ":Off"),
       "ParkingRegion" == a
         ? document.getElementById("Parking" + b + ":Off") &&
-          N("Parking" + b + ":Off")
+          _simulateClick("Parking" + b + ":Off")
         : "FutureBuildingRegion" == a
           ? document.getElementById("Parking" + b + ":Off") &&
-            N("Parking" + b + ":Off")
+            _simulateClick("Parking" + b + ":Off")
           : "AffiliateBuildingRegion" == a
             ? document.getElementById("Parking" + b + ":Off") &&
-              N("Parking" + b + ":Off")
-            : document.getElementById(b + ":Off") && N(b + ":Off"))
-    : N(a + "-" + b + "-On");
+              _simulateClick("Parking" + b + ":Off")
+            : document.getElementById(b + ":Off") && _simulateClick(b + ":Off"))
+    : _simulateClick(a + "-" + b + "-On");
 }
-window.v = M;
-window.u = M;
-window.w = M;
-window.z = M;
-window.divStretch = M;
+window.v = _captureMouseEvents;
+window.u = _captureMouseEvents;
+window.w = _captureMouseEvents;
+window.z = _captureMouseEvents;
+window.divStretch = _captureMouseEvents;
 window.divStretchTarget = "";
 window.A = 0;
 window.B = 0;
@@ -1466,7 +1546,7 @@ window.C = 0;
 window.t = 0;
 window.thumbOffsetY = 0;
 window.thumbOffsetX = 0;
-function ta(a) {
+function _handleMouseDown(a) {
   a = a || window.event;
   a.preventDefault && a.preventDefault();
   a.target ? (targ = a.target) : a.srcElement && (targ = a.srcElement);
@@ -1538,7 +1618,7 @@ function ta(a) {
     scrollstartleft = parseInt(b.style.left, 10);
     scrollstarttop = parseInt(b.style.top, 10);
     if ("viewerWindow" == b.id || b.id == "drawingWindow-" + zoom)
-      ((ismousedown = J),
+      ((ismousedown = _layersOn),
         (document.onselectstart = Ja),
         a.touches ||
           (document.getElementById("drawingWindow-" + zoom).style.cursor =
@@ -1547,7 +1627,7 @@ function ta(a) {
       (a.touches ||
         (document.getElementById("keyLiteShade").style.cursor =
           "url('/Media/Cursors/closedhand_8_8.cur'), default"),
-        (keyliteclickoff = ismousedownkey = J),
+        (keyliteclickoff = ismousedownkey = _layersOn),
         (document.onselectstart = Ja));
     if (
       document.getElementById("shapeWindow") &&
@@ -1558,19 +1638,19 @@ function ta(a) {
         (shapeWindow.style.zIndex = -1));
   }
 }
-function va(a) {
+function _handleGestureStart(a) {
   a || (a = window.event);
   if (a) {
     var b = 0;
     a.target ? (b = a.target) : a.srcElement && (b = a.srcElement);
-    a.cancelBubble = J;
+    a.cancelBubble = _layersOn;
     a.stopPropagation && a.stopPropagation();
     document.getElementById("drawingWindow-" + zoom).style.cursor =
       "url('/Media/Cursors/openhand_8_8.cur'), default";
     document.getElementById("keyLiteShade") &&
       (document.getElementById("keyLiteShade").style.cursor =
         "url('/Media/Cursors/openhand_8_8.cur'), default");
-    ismousedownkey = ismousedownscroll = ismousedown = M;
+    ismousedownkey = ismousedownscroll = ismousedown = _captureMouseEvents;
     document.onselectstart = L;
     if (document.getElementById("shapeWindow")) {
       shapeWindow.style.zIndex = 1e4;
@@ -1590,7 +1670,7 @@ function va(a) {
   }
 }
 function La(a, b) {
-  if (ismousedown == J) {
+  if (ismousedown == _layersOn) {
     var d = a.screenX,
       c = a.screenY;
     a.touches &&
@@ -1603,7 +1683,7 @@ function La(a, b) {
     T(b, d, c);
     document.getElementById("keyLite") && Ea();
     V();
-  } else if (ismousedownkey == J) {
+  } else if (ismousedownkey == _layersOn) {
     d = a.screenX;
     c = a.screenY;
     a.touches &&
@@ -1714,7 +1794,7 @@ function V() {
               9 != document.documentMode &&
                 (window.addEventListener
                   ? ((n.style.visibility = "hidden"),
-                    n.addEventListener("load", $, M))
+                    n.addEventListener("load", $, _captureMouseEvents))
                   : ((n.style.visibility = "hidden"), (n.onload = $)));
               n.style.border = "0px none";
               n.style.margin = "0px";
@@ -1809,7 +1889,7 @@ function V() {
                   9 != document.documentMode &&
                     (window.addEventListener
                       ? ((q.style.visibility = "hidden"),
-                        q.addEventListener("load", $, M))
+                        q.addEventListener("load", $, _captureMouseEvents))
                       : ((q.style.visibility = "hidden"), (q.onload = $))),
                   (q.style.border = "0px none"),
                   (q.style.margin = "0px"),
@@ -1846,7 +1926,7 @@ function V() {
               9 != document.documentMode &&
                 (window.addEventListener
                   ? ((l.style.visibility = "hidden"),
-                    l.addEventListener("load", $, M))
+                    l.addEventListener("load", $, _captureMouseEvents))
                   : ((l.style.visibility = "hidden"), (l.onload = $))),
               (l.style.border = "0px none"),
               (l.style.margin = "0px"),
@@ -1861,7 +1941,7 @@ function V() {
               document.getElementById("drawingWindow-" + zoom).appendChild(l))),
         "Maps" == module || "Floorplans" == module || "pubMaps" == module)
       )
-        for (g in ((d = f), (c = x), (e = zoom), (g = void 0), layerInfo))
+        for (g in ((d = f), (c = x), (e = zoom), (g = undefined), layerInfo))
           if (1 == layerInfo[g].toggle && 1 == layerInfo[g].e) {
             l = "Image-" + layerInfo[g].name + "-" + d + "x" + c + "-" + e;
             k = e - 1;
@@ -1914,7 +1994,7 @@ function V() {
                 9 != document.documentMode &&
                   (window.addEventListener
                     ? ((k.style.visibility = "hidden"),
-                      k.addEventListener("load", $, M))
+                      k.addEventListener("load", $, _captureMouseEvents))
                     : ((k.style.visibility = "hidden"), (k.onload = $))),
                 (k.style.border = "0px none"),
                 (k.style.margin = "0px"),
@@ -1933,14 +2013,14 @@ function V() {
                   .appendChild(k));
           }
 }
-function O(a, b, d) {
-  var c = M;
+function _zoomImage(a, b, d) {
+  var c = _captureMouseEvents;
   document.getElementById("shapeWindow") &&
-    ((shapeWindow.style.visibility = "hidden"), (c = J));
+    ((shapeWindow.style.visibility = "hidden"), (c = _layersOn));
   if (document.getElementById("drawingWindow-" + a))
     var e = document.getElementById("drawingWindow-" + zoom),
       f = document.getElementById("drawingWindow-" + a);
-  else return M;
+  else return _captureMouseEvents;
   var r = 0,
     p = 0;
   0 == b && 0 == d
@@ -1968,12 +2048,12 @@ function O(a, b, d) {
     shapeWindow.style.visibility = "hidden";
     for (var j in shapes)
       if (
-        ((m = Q(String(j), "-")),
+        ((m = _split(String(j), "-")),
         !m[2] &&
           (shapes[j].applyTransform(dojox.gfx.matrix.scale({ x: b, y: d })),
           "svg" == dojo.dojox.gfx.renderer))
       )
-        for (var m = m[1], s = 0, E = J, q = ""; E == J; )
+        for (var m = m[1], s = 0, E = _layersOn, q = ""; E == _layersOn; )
           if (
             shapes["key-" + m + "-outer-" + s] ||
             shapes["key-" + m + "-" + s]
@@ -1985,7 +2065,7 @@ function O(a, b, d) {
                 width: k,
                 color: q,
               }));
-            for (var n = 1, x = J; x == J; )
+            for (var n = 1, x = _layersOn; x == _layersOn; )
               shapes["key-" + m + "-inner-" + n + "-" + s]
                 ? ((q =
                     shapes[
@@ -1996,12 +2076,12 @@ function O(a, b, d) {
                     color: q,
                   }),
                   n++)
-                : (x = M);
+                : (x = _captureMouseEvents);
             shapes["key-" + m + "-" + s] &&
               ((q = shapes["key-" + m + "-" + s].strokeStyle.color.toRgb()),
               shapes["key-" + m + "-" + s].setStroke({ width: k, color: q }));
             s++;
-          } else E = M;
+          } else E = _captureMouseEvents;
     shapeWindow.style.visibility = "";
   }
   T(f, r, p);
@@ -2089,9 +2169,9 @@ function O(a, b, d) {
     V();
   }, 250);
   c && (shapeWindow.style.visibility = "");
-  return M;
+  return _captureMouseEvents;
 }
-function ua(a) {
+function _handleMouseScroll(a) {
   var b = 0;
   a || (a = window.event);
   a.wheelDelta
@@ -2111,12 +2191,12 @@ function ua(a) {
         document.documentElement.scrollTop));
   b &&
     (0 < b
-      ? zoom < maxZoom && ((b = zoom + 1), O(b, d, c))
-      : 0 < zoom - 1 && ((b = zoom - 1), O(b, d, c)));
+      ? zoom < maxZoom && ((b = zoom + 1), _zoomImage(b, d, c))
+      : 0 < zoom - 1 && ((b = zoom - 1), _zoomImage(b, d, c)));
   a.preventDefault && a.preventDefault();
-  a.returnValue = M;
+  a.returnValue = _captureMouseEvents;
 }
-function wa(a) {
+function _handleGestureChange(a) {
   0 == startPinch && (startPinchZoom = zoom);
   startPinch = 1;
   a = 0;
@@ -2130,19 +2210,19 @@ function wa(a) {
         ? startPinchZoom < maxZoom &&
           ((b = Math.floor(startPinchZoom + b - 1)),
           b > maxZoom && (b = maxZoom),
-          O(b, d, c))
+          _zoomImage(b, d, c))
         : 0 < startPinchZoom &&
           ((b = Math.ceil(startPinchZoom - 1 / b + 1)),
           0 >= b && (b = 0),
-          O(b, d, c)));
+          _zoomImage(b, d, c)));
     a.preventDefault && a.preventDefault();
   }
-  a.returnValue = M;
+  a.returnValue = _captureMouseEvents;
 }
-function xa() {
+function _handleGestureEnd() {
   startPinch = 0;
 }
-function ca() {
+function _centerDrawing() {
   var a = document.getElementById("viewerWindow"),
     b = document.getElementById("drawingWindow-" + zoom);
   T(
@@ -2175,10 +2255,10 @@ function Z() {
   );
   U();
 }
-function ka(a, b) {
-  if (keyliteclickoff == M) {
+function _keyLiteClick(a, b) {
+  if (keyliteclickoff == _captureMouseEvents) {
     a || (a = window.event);
-    a.cancelBubble = J;
+    a.cancelBubble = _layersOn;
     a.stopPropagation && a.stopPropagation();
     var d = Da(document.getElementById("thumb")),
       c = Ca(),
@@ -2186,9 +2266,9 @@ function ka(a, b) {
     xy.x =
       (a.offsetX ? a.offsetX + thumbOffsetX : a.pageX - d.x) / b.clientWidth;
     xy.y = c / b.clientHeight;
-    ca();
+    _centerDrawing();
   }
-  keyliteclickoff = M;
+  keyliteclickoff = _captureMouseEvents;
 }
 function Da(a) {
   if (a == L) return { x: 0, y: 0 };
@@ -2217,9 +2297,9 @@ function Ca() {
   return [a, b];
 }
 function Ja() {
-  return M;
+  return _captureMouseEvents;
 }
-function ha(a) {
+function _toggleLayer(a) {
   var b = 0;
   a = a || window.event;
   a.target ? (b = a.target) : a.srcElement && (b = a.srcElement);
@@ -2285,7 +2365,7 @@ function ha(a) {
   }
   U();
 }
-function na(a) {
+function _toggleBackground(a) {
   var b = 0;
   a = a || window.event;
   a.target ? (b = a.target) : a.srcElement && (b = a.srcElement);
@@ -2296,7 +2376,7 @@ function na(a) {
     : ((a = "/Media/Icons/Checkbox_16x16.gif"),
       (d = "/Media/Icons/CheckboxEmpty_16x16.gif"));
   var c = 0,
-    e = Q(String(b.id), "-"),
+    e = _split(String(b.id), "-"),
     f;
   for (f in backgroundInfo)
     if (backgroundInfo[f].c == e[1])
@@ -2343,11 +2423,11 @@ function na(a) {
       defaultThumbH + "px"));
   U();
 }
-function oa(a) {
+function _toggleLabel(a) {
   var b = 0;
   a = a || window.event;
   a.target ? (b = a.target) : a.srcElement && (b = a.srcElement);
-  labelName = Q(String(b.id), "-");
+  labelName = _split(String(b.id), "-");
   for (var d in labelInfo)
     labelInfo[d].d == labelName[1]
       ? 0 == labelInfo[d].visible
@@ -2382,8 +2462,8 @@ function $(a) {
 String.prototype.trim = function () {
   return this.replace(/(^\s*)|(\s*$)/g, "");
 };
-function Q(a, b) {
-  return a.trim().split(RegExp("\\s*" + b + "\\s*"));
+function _split(_string, _separator) {
+  return _string.trim().split(RegExp("\\s*" + _separator + "\\s*"));
 }
 function Ba() {
   var a;
@@ -2396,7 +2476,7 @@ function Ba() {
       try {
         a = new ActiveXObject("Microsoft.XMLHTTP");
       } catch (c) {
-        a = M;
+        a = _captureMouseEvents;
       }
     }
   }
@@ -2423,12 +2503,28 @@ function W(a) {
     a.test(b[e].className) && ((c[f] = b[e]), f++);
   return c;
 }
-function N(a) {
+function _simulateClick(a) {
   a = document.getElementById(a);
   if (a.click) a.click();
   else {
     var b = document.createEvent("MouseEvents");
-    b.initMouseEvent("click", J, J, window, 0, 0, 0, 0, 0, M, M, J, M, 0, L);
+    b.initMouseEvent(
+      "click",
+      _layersOn,
+      _layersOn,
+      window,
+      0,
+      0,
+      0,
+      0,
+      0,
+      _captureMouseEvents,
+      _captureMouseEvents,
+      _layersOn,
+      _captureMouseEvents,
+      0,
+      L,
+    );
     a.dispatchEvent(b);
   }
 }
@@ -2437,7 +2533,23 @@ function Ka(a, b, d) {
   if (a.click) a.click();
   else {
     var c = document.createEvent("MouseEvents");
-    c.initMouseEvent("click", J, J, window, 0, 0, 0, b, d, M, M, J, M, 0, L);
+    c.initMouseEvent(
+      "click",
+      _layersOn,
+      _layersOn,
+      window,
+      0,
+      0,
+      0,
+      b,
+      d,
+      _captureMouseEvents,
+      _captureMouseEvents,
+      _layersOn,
+      _captureMouseEvents,
+      0,
+      L,
+    );
     a.dispatchEvent(c);
   }
 }
@@ -2446,7 +2558,23 @@ function Ha() {
   if (a.s) a.s();
   else {
     var b = document.createEvent("MouseEvents");
-    b.initMouseEvent("mouseup", J, J, window, 0, 0, 0, 0, 0, M, M, J, M, 0, L);
+    b.initMouseEvent(
+      "mouseup",
+      _layersOn,
+      _layersOn,
+      window,
+      0,
+      0,
+      0,
+      0,
+      0,
+      _captureMouseEvents,
+      _captureMouseEvents,
+      _layersOn,
+      _captureMouseEvents,
+      0,
+      L,
+    );
     a.dispatchEvent(b);
   }
 }
@@ -2455,16 +2583,17 @@ function P(a, b) {
     for (var d = b.split(","), c = 0; c < d.length; c++) {
       var e = d[c],
         f = e + name;
-      -1 < e.indexOf("\x3d") && ((f = e.split("\x3d")), (e = f[0]), (f = f[1]));
+      -1 < e.indexOf("=") && ((f = e.split("=")), (e = f[0]), (f = f[1]));
       a.addEventListener
         ? ("on" == e.substring(0, 2) && (e = e.substring(2)),
-          a.addEventListener(e, eval(f), M),
-          "click" == e && a.addEventListener("touchend", eval(f), M))
+          a.addEventListener(e, eval(f), _captureMouseEvents),
+          "click" == e &&
+            a.addEventListener("touchend", eval(f), _captureMouseEvents))
         : ("on" != e.substring(0, 2) && (e = "on" + e),
           a.attachEvent(e, eval(f)));
     }
 }
-window.mouseUp = va;
+window.mouseUp = _handleGestureStart;
 window.continueMove = function (a) {
   a || (a = window.event);
   if (a.pageX || a.pageY) ((mousePosX = a.pageX), (mousePosY = a.pageY));
@@ -2537,16 +2666,17 @@ window.continueMove = function (a) {
       f.style.top = r + "px";
     }
   } else
-    ismousedown == J
+    ismousedown == _layersOn
       ? startPinch || La(a, document.getElementById("drawingWindow-" + zoom))
-      : ismousedownkey == J && La(a, document.getElementById("keyLite"));
+      : ismousedownkey == _layersOn &&
+        La(a, document.getElementById("keyLite"));
 };
-window.setClickPos = ta;
+window.setClickPos = _handleMouseDown;
 window.hideThis = Fa;
 window.thumbOffsetY = 0;
 window.thumbOffsetX = 0;
 window.returnFalse = function () {
-  return M;
+  return _captureMouseEvents;
 };
 function Pa(a, b, d, c) {
   if ("GeometryCollection" == a.type)
@@ -2622,10 +2752,19 @@ function Qa(a, b, d, c) {
         p[2 * g + 1 + s] = r[g][1] * e;
         for (l = 1; l < a.length; l++)
           if (r[g][0] == bestPairs[l].n && r[g][1] == bestPairs[l].o) {
-            for (var k = a[l], j = M, E = J, q = 0, m = 0; m < k.length; m++)
+            for (
+              var k = a[l],
+                j = _captureMouseEvents,
+                E = _layersOn,
+                q = 0,
+                m = 0;
+              m < k.length;
+              m++
+            )
               (k[m][0] == bestPairs[l].l &&
                 k[m][1] == bestPairs[l].m &&
-                (j || (0 != m ? (q = m) : (E = M)), (j = J)),
+                (j || (0 != m ? (q = m) : (E = _captureMouseEvents)),
+                (j = _layersOn)),
                 j &&
                   ((s += 2),
                   (p[2 * g + s] = k[m][0] * f),
@@ -2690,7 +2829,7 @@ function Ga(a, b, d, c, e, f) {
     );
     if ("svg" == dojo.dojox.gfx.renderer) {
       l = 0;
-      for (k = J; k == J; )
+      for (k = _layersOn; k == _layersOn; )
         if (
           shapes["key-" + a + "-outer-" + l] ||
           shapes["key-" + a + "-" + l]
@@ -2698,17 +2837,17 @@ function Ga(a, b, d, c, e, f) {
           shapes["key-" + a + "-outer-" + l] &&
             shapes["key-" + a + "-outer-" + l].setStroke({ width: g });
           m = 0;
-          for (s = J; s == J; )
+          for (s = _layersOn; s == _layersOn; )
             shapes["key-" + a + "-inner-" + m + "-" + l]
               ? (shapes["key-" + a + "-inner-" + m + "-" + l].setStroke({
                   width: g,
                 }),
                 m++)
-              : (s = M);
+              : (s = _captureMouseEvents);
           shapes["key-" + a + "-" + l] &&
             shapes["key-" + a + "-" + l].setStroke({ width: g });
           l++;
-        } else k = M;
+        } else k = _captureMouseEvents;
     }
   }
   if (
@@ -2732,36 +2871,36 @@ function Ga(a, b, d, c, e, f) {
         (s.style.background = "white"),
         (s.style.zIndex = 1001),
         (s.innerHTML = window.addEventListener
-          ? "\x3ccenter id\x3dpincenter-" +
+          ? "\x3ccenter id=pincenter-" +
             a +
             "-" +
             m +
             "\x3e" +
             f +
-            "\x3c/center\x3e\x3cdiv id\x3dpincenterdiv-" +
+            "\x3c/center\x3e\x3cdiv id=pincenterdiv-" +
             a +
             "-" +
             m +
-            " style\x3d'width: 35px; height: 15px; overflow: hidden; z-index: 1; position: absolute; top: 18px; left: -5px;'\x3e\x3cimg id\x3dpincenterimg-" +
+            " style='width: 35px; height: 15px; overflow: hidden; z-index: 1; position: absolute; top: 18px; left: -5px;'\x3e\x3cimg id=pincenterimg-" +
             a +
             "-" +
             m +
-            " style\x3d'position: absolute; left: 5px; top: -770px; width: 690px; height: 786px; border: 0px none; padding: 0px; margin: 0px;' src\x3d'/media/popup/popup.png'\x3e\x3c/div\x3e"
-          : "\x3ccenter id\x3dpincenter-" +
+            " style='position: absolute; left: 5px; top: -770px; width: 690px; height: 786px; border: 0px none; padding: 0px; margin: 0px;' src='/media/popup/popup.png'\x3e\x3c/div\x3e"
+          : "\x3ccenter id=pincenter-" +
             a +
             "-" +
             m +
             "\x3e" +
             f +
-            "\x3c/center\x3e\x3cdiv id\x3dpincenterdiv-" +
+            "\x3c/center\x3e\x3cdiv id=pincenterdiv-" +
             a +
             "-" +
             m +
-            " style\x3d'width: 35px; height: 15px; overflow: hidden; z-index: 1; position: absolute; top: 16px; left: -5px;'\x3e\x3cimg id\x3dpincenterimg-" +
+            " style='width: 35px; height: 15px; overflow: hidden; z-index: 1; position: absolute; top: 16px; left: -5px;'\x3e\x3cimg id=pincenterimg-" +
             a +
             "-" +
             m +
-            " style\x3d'position: absolute; left: 5px; top: -770px; width: 690px; height: 786px; border: 0px none; padding: 0px; margin: 0px;' src\x3d'/media/popup/popup.png'\x3e\x3c/div\x3e"),
+            " style='position: absolute; left: 5px; top: -770px; width: 690px; height: 786px; border: 0px none; padding: 0px; margin: 0px;' src='/media/popup/popup.png'\x3e\x3c/div\x3e"),
         (s.style.left = p * k - 9 + "px"),
         (s.style.top = g * l - 32 + "px"),
         (s.style.width = "27px"),
@@ -2770,8 +2909,8 @@ function Ga(a, b, d, c, e, f) {
         (s.style.cursor = "pointer"),
         s.setAttribute("class", "pindiv"),
         window.addEventListener
-          ? (s.addEventListener("mouseup", Ia, M),
-            s.addEventListener("touchend", Ia, M))
+          ? (s.addEventListener("mouseup", Ia, _captureMouseEvents),
+            s.addEventListener("touchend", Ia, _captureMouseEvents))
           : (s.onmouseup = Ia));
   }
   if ("poly" == e || "both" == e)
@@ -2779,7 +2918,7 @@ function Ga(a, b, d, c, e, f) {
       thisNode = g.getNode();
       thisNode.style.visibility = "";
       f = 0;
-      for (p = J; p == J; )
+      for (p = _layersOn; p == _layersOn; )
         if (
           shapes["key-" + a + "-outer-" + f] ||
           shapes["key-" + a + "-" + f]
@@ -2790,14 +2929,14 @@ function Ga(a, b, d, c, e, f) {
               color: [b, d, c, 1],
             });
           g = 1;
-          for (l = J; l == J; )
+          for (l = _layersOn; l == _layersOn; )
             shapes["key-" + a + "-inner-" + g + "-" + f]
               ? (shapes["key-" + a + "-inner-" + g + "-" + f].setStroke({
                   width: r,
                   color: [b, d, c, 1],
                 }),
                 g++)
-              : (l = M);
+              : (l = _captureMouseEvents);
           shapes["key-" + a + "-fill-" + f] &&
             shapes["key-" + a + "-fill-" + f].setFill([b, d, c, 0.3]);
           shapes["key-" + a + "-" + f] &&
@@ -2805,7 +2944,7 @@ function Ga(a, b, d, c, e, f) {
               .setStroke({ width: r, color: [b, d, c, 1] })
               .setFill([b, d, c, 0.3]);
           f++;
-        } else p = M;
+        } else p = _captureMouseEvents;
     }
   for (f = 1; f <= maxZoom; f++)
     if (
@@ -2833,7 +2972,7 @@ function ya(a, b, d) {
         : 0) ||
     0 == c
   )
-    return M;
+    return _captureMouseEvents;
   document.getElementById(
     a + "_" + tabSelectedTab[a] + "_content",
   ).style.display = "none";
@@ -2847,7 +2986,7 @@ function ya(a, b, d) {
   document.getElementById(a + "_" + b + "_" + d + "_off").style.display =
     "none";
   tabSelectedTab[a] = b + "_" + d;
-  "undefined" != typeof R && R();
+  "undefined" != typeof _handleResize && _handleResize();
 }
 window.tabRows = {};
 window.tabRowTabs = {};
