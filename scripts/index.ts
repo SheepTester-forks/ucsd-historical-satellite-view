@@ -1,12 +1,17 @@
-// node scripts/index.ts
+// node scripts/index.ts (la-jolla|hillcrest) <path>
 
 import { createWriteStream } from "node:fs";
-import { access, constants, mkdir, rename, stat } from "node:fs/promises";
+import {
+  access,
+  constants,
+  mkdir,
+  readFile,
+  rename,
+  stat,
+} from "node:fs/promises";
 import { Readable } from "node:stream";
 import { finished } from "node:stream/promises";
 import ProgressBar from "progress";
-import backgroundInfoJson from "../facts/backgroundInfo.json" with { type: "json" };
-import backgroundZoomJson from "../facts/backgroundZoom.json" with { type: "json" };
 import {
   getTileUrl,
   parseBackgroundInfo,
@@ -14,11 +19,14 @@ import {
   type BackgroundInfo,
 } from "./lib/parse.ts";
 
-const backgroundInfo = parseBackgroundInfo(backgroundInfoJson).sort((a, b) =>
-  a.name.localeCompare(b.name),
-);
+const [, , campus, tilesPath] = process.argv;
+const backgroundInfo = parseBackgroundInfo(
+  JSON.parse(await readFile(`facts/${campus}/backgroundInfo.json`, "utf-8")),
+).sort((a, b) => a.name.localeCompare(b.name));
 const backgroundZoom = Map.groupBy(
-  parseBackgroundZoom(backgroundZoomJson),
+  parseBackgroundZoom(
+    JSON.parse(await readFile(`facts/${campus}/backgroundZoom.json`, "utf-8")),
+  ),
   (zoom) => zoom.backgroundId,
 );
 
@@ -30,7 +38,7 @@ async function ensureTilePng(
   x: number,
   y: number,
 ): Promise<string> {
-  const dir = `tiles_png/${layer.name}`;
+  const dir = `${tilesPath}/${layer.name}`;
   const path = `${dir}/${x.toString().padStart(3, "0")}-${y.toString().padStart(3, "0")}.png`;
 
   try {
