@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 for aerial_path in tiles_png/*
 do
   aerial=$(basename $aerial_path)
