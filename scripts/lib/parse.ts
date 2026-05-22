@@ -1,7 +1,6 @@
 import * as z from "zod";
 
 const domain = "https://maps.ucsd.edu/";
-const basePath = "/tdb/Mapping/CampusMap";
 const TILE_SIZE = 256;
 
 const zoomInfoSchema = z.tuple([z.int(), z.string(), z.int(), z.int()]);
@@ -74,6 +73,7 @@ export const parseCenterInfo = (json: unknown) =>
     .map(([key, f, g]) => ({ key, tilesX: f, tilesY: g }));
 
 export const getTileUrl = (
+  basePath: string,
   layer: BackgroundInfo,
   zoom: number,
   x: number,
@@ -81,6 +81,6 @@ export const getTileUrl = (
 ) =>
   new URL(
     // The ~ part seems to be ignored
-    `${basePath}/${layer.name}/${zoom}/${y}/${x}.png`,
+    `${basePath}${layer.name}/${zoom}/${y}/${x}.png`,
     domain,
   );

@@ -20,6 +20,8 @@ import {
 } from "./lib/parse.ts";
 
 const [, , campus, tilesPath] = process.argv;
+
+const basePath = (await readFile(`facts/${campus}/path.txt`, "utf-8")).trim();
 const backgroundInfo = parseBackgroundInfo(
   JSON.parse(await readFile(`facts/${campus}/backgroundInfo.json`, "utf-8")),
 ).sort((a, b) => a.name.localeCompare(b.name));
@@ -52,7 +54,7 @@ async function ensureTilePng(
 
   mkdir(dir, { recursive: true });
 
-  const response = await fetch(getTileUrl(layer, zoom, x, y));
+  const response = await fetch(getTileUrl(basePath, layer, zoom, x, y));
   if (!response.ok) {
     console.error(await response.text().catch((err) => err));
     throw new Error(`HTTP ${response.status}: ${response.url}`);
@@ -72,7 +74,7 @@ const CONC_LIMIT = 10;
 
 let totalTotalSize = 0;
 for (const info of backgroundInfo) {
-  if (!info.name.startsWith("Aerial")) {
+  if (!info.name.includes("Aerial")) {
     console.warn(`[${info.name}] skipped`);
     continue;
   }
@@ -92,7 +94,12 @@ for (const info of backgroundInfo) {
     console.warn(`[${info.name}] interesting, zoom=${zoom}`);
   }
 
-  const path = await ensureTilePng(info, zoom, 30, 30);
+  const path = await ensureTilePng(
+    info,
+    zoom,
+    Math.floor(tileCountX / 2),
+    Math.floor(tileCountY / 2),
+  );
   const { size: tile0Size } = await stat(path);
 
   if (tileCountX >= 100) {
@@ -109,7 +116,7 @@ for (const info of backgroundInfo) {
     `[${info.name}] ${tileCount} tiles, ~${format.format(tile0Size)} bytes per tile, so ${format.format(totalSize)} bytes total`,
   );
   console.warn(
-    `[${info.name}] ${getTileUrl(info, zoom, tileCountX - 1, tileCountY - 1).href}`,
+    `[${info.name}] ${getTileUrl(basePath, info, zoom, tileCountX - 1, tileCountY - 1).href}`,
   );
 
   const progress = new ProgressBar(
