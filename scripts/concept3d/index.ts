@@ -58,21 +58,22 @@ while ((next = stack.pop())) {
     empty++;
     continue;
   }
-  for (const [dx, dy] of [
-    [-1, 0],
-    [1, 0],
-    [0, -1],
-    [0, 1],
-  ]) {
-    const neighbor = { x: point.x + dx, y: point.y + dy };
-    if (!added.has(`${neighbor.x}, ${neighbor.y}`)) {
-      added.add(`${neighbor.x}, ${neighbor.y}`);
-      count++;
-      stack.push(
-        ensureTile(tileSet, zoom, neighbor).then((empty) =>
-          empty ? null : neighbor,
-        ),
-      );
+  for (const dx of [-1, 0, 1]) {
+    for (const dy of [-1, 0, 1]) {
+      const manDist = Math.abs(dx) + Math.abs(dy);
+      if (manDist < 1) {
+        continue;
+      }
+      const neighbor = { x: point.x + dx, y: point.y + dy };
+      if (!added.has(`${neighbor.x}, ${neighbor.y}`)) {
+        added.add(`${neighbor.x}, ${neighbor.y}`);
+        count++;
+        stack.push(
+          ensureTile(tileSet, zoom, neighbor).then((empty) =>
+            empty ? null : neighbor,
+          ),
+        );
+      }
     }
   }
 }
