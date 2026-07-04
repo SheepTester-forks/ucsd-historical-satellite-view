@@ -1,27 +1,27 @@
 /**
  * @file
- * Usage: node scripts/concept3d/index.ts <tileset> <zoom>
+ * Usage: node scripts/concept3d/index.ts <tileset> <zoom> [labels-tileset]
  *
  * Uses DFS from the starting points defined below to cache every map tile.
  *
  * Based on https://sheeptester.github.io/words-go-here/misc/ucsd-map.html
  *
- * - node scripts/concept3d/index.ts UCSD_MasterUpdated-03-28-2019 21
- * - node scripts/concept3d/index.ts mrg2020-01-08_1005_Labels_2overlays 21
- * - node scripts/concept3d/index.ts 1005_Map_69fce94e12df9 20
- * - node scripts/concept3d/index.ts 1005_BuildingLabels_69fce9d8df886 20
+ * - node scripts/concept3d/index.ts UCSD_MasterUpdated-03-28-2019 21 mrg2020-01-08_1005_Labels_2overlays
+ * - node scripts/concept3d/index.ts 1005_Map_69fce94e12df9 20 1005_BuildingLabels_69fce9d8df886
  */
 
 import { mkdir, writeFile } from "node:fs/promises";
-import { ensureTile, latLngToTile } from "./lib.ts";
+import { ensureTile, latLngToTile, type Point } from "./lib.ts";
 import { join } from "node:path";
 
 if (process.argv.length < 4) {
-  console.error(`usage: node scripts/concept3d/index.ts <tileset> <zoom>`);
+  console.error(
+    `usage: node scripts/concept3d/index.ts <tileset> <zoom> [labels-tileset]`,
+  );
   process.exit(1);
 }
 
-const [, , tileSet, zoomStr] = process.argv;
+const [, , tileSet, zoomStr, labelsTileset] = process.argv;
 const zoom = +zoomStr;
 
 const starts: Record<string, [lat: number, long: number]> = {
@@ -50,11 +50,13 @@ const stack = Object.entries(starts).map(async ([name, [lat, long]]) => {
   return { ...point, isEmpty };
 });
 
+let labelsDone = 0;
 const printStats = () =>
-  `\rvisited: ${count} | empty: ${emptyCells.size} | stack: ${stack.length}`.padEnd(
+  `\rvisited: ${count} | empty: ${emptyCells.size} | stack: ${stack.length} | labels done: ${labelsDone}`.padEnd(
     80,
   );
 
+const labelPromises: Promise<Point & { isEmpty: boolean }>[] = [];
 let next;
 while ((next = stack.pop())) {
   process.stderr.write(printStats());
@@ -62,6 +64,18 @@ while ((next = stack.pop())) {
   if (point.isEmpty) {
     emptyCells.add(`${point.x}, ${point.y}`);
     continue;
+  }
+  if (labelsTileset) {
+    labelPromises.push(
+      ensureTile(labelsTileset, zoom, point).then((isEmpty) => {
+        labelsDone++;
+        process.stderr.write(printStats());
+        return {
+          ...point,
+          isEmpty,
+        };
+      }),
+    );
   }
   for (const dx of [-1, 0, 1]) {
     for (const dy of [-1, 0, 1]) {
@@ -85,6 +99,13 @@ while ((next = stack.pop())) {
   }
 }
 
+const labelsNonempty = new Set(
+  (await Promise.all(labelPromises))
+    .values()
+    .filter((point) => !point.isEmpty)
+    .map(({ x, y }) => `${x}, ${y}` as const),
+);
+
 console.log(printStats());
 
 const bounds = Object.entries(added)
@@ -100,11 +121,17 @@ const bounds = Object.entries(added)
     }),
     { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity },
   );
-let str = `total: ${count} | empty: ${emptyCells.size}\n`;
+let str = `total: ${count} | empty: ${emptyCells.size} | labels: ${labelsNonempty.size}\n`;
 for (let y = bounds.maxY; y >= bounds.minY; y--) {
   let line = "";
   for (let x = bounds.minX; x <= bounds.maxX; x++) {
-    line += added[x]?.has(y) ? (emptyCells.has(`${x}, ${y}`) ? "." : "#") : " ";
+    line += added[x]?.has(y)
+      ? emptyCells.has(`${x}, ${y}`)
+        ? "."
+        : labelsNonempty.has(`${x}, ${y}`)
+          ? "="
+          : "-"
+      : " ";
   }
   str += line.trimEnd() + "\n";
 }
