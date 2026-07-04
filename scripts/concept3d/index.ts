@@ -100,7 +100,7 @@ const bounds = Object.entries(added)
     }),
     { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity },
   );
-let str = "";
+let str = `total: ${count} | empty: ${emptyCells.size}\n`;
 for (let y = bounds.maxY; y >= bounds.minY; y--) {
   let line = "";
   for (let x = bounds.minX; x <= bounds.maxX; x++) {
