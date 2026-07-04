@@ -2,6 +2,8 @@
  * @file
  * Usage: node scripts/concept3d/index.ts <tileset> <zoom>
  *
+ * Uses DFS from the starting points defined below to cache every map tile.
+ *
  * Based on https://sheeptester.github.io/words-go-here/misc/ucsd-map.html
  *
  * - node scripts/concept3d/index.ts UCSD_MasterUpdated-03-28-2019 21
@@ -10,7 +12,7 @@
  * - node scripts/concept3d/index.ts 1005_BuildingLabels_69fce9d8df886 20
  */
 
-import { ensureTile, latLngToTile, type Point } from "./lib.ts";
+import { ensureTile, latLngToTile } from "./lib.ts";
 
 if (process.argv.length < 4) {
   console.error(`usage: node scripts/concept3d/index.ts <tileset> <zoom>`);
@@ -30,12 +32,13 @@ const starts: Record<string, [lat: number, long: number]> = {
   "East Campus Medical Center": [32.776609103331246, -117.05706916634533],
 };
 
-const added = new Map<number, Set<number>>();
+const added = new Set<`${number}, ${number}`>();
 let count = 0;
+let empty = 0;
 
 const stack = Object.entries(starts).map(async ([name, [lat, long]]) => {
   const point = latLngToTile(lat, long, zoom);
-  added.getOrInsertComputed(point.x, () => new Set()).add(point.y);
+  added.add(`${point.x}, ${point.y}`);
   count++;
   const isEmpty = await ensureTile(tileSet, zoom, point);
   if (isEmpty) {
@@ -47,10 +50,11 @@ const stack = Object.entries(starts).map(async ([name, [lat, long]]) => {
 let next;
 while ((next = stack.pop())) {
   process.stderr.write(
-    `\rvisited: ${count} | stack: ${stack.length}`.padEnd(80),
+    `\rvisited: ${count} | empty: ${empty} | stack: ${stack.length}`.padEnd(80),
   );
   const point = await next;
   if (!point) {
+    empty++;
     continue;
   }
   for (const [dx, dy] of [
@@ -60,8 +64,8 @@ while ((next = stack.pop())) {
     [1, 1],
   ]) {
     const neighbor = { x: point.x + dx, y: point.y + dy };
-    if (!added.get(neighbor.x)?.has(neighbor.y)) {
-      added.getOrInsertComputed(neighbor.x, () => new Set()).add(neighbor.y);
+    if (!added.has(`${neighbor.x}, ${point.y}`)) {
+      added.add(`${neighbor.x}, ${point.y}`);
       count++;
       stack.push(
         ensureTile(tileSet, zoom, neighbor).then((empty) =>

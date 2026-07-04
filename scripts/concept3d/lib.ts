@@ -37,6 +37,9 @@ const limiter = new ConcurrencyLimiter(32);
 /** Etag header value used for empty tiles */
 const EMPTY_ETAG = '"3b81a1fbab29e22d62a39c8aaf65f1ab"';
 
+/**
+ * @returns Whether the tile is empty.
+ */
 export async function ensureTile(
   tileSet: string,
   zoom: number,
@@ -53,7 +56,7 @@ export async function ensureTile(
 
   try {
     await access(cachePathExists, constants.F_OK);
-    return true;
+    return false;
   } catch (err) {
     if (!(err instanceof Error && "code" in err && err.code === "ENOENT")) {
       throw err;
@@ -62,7 +65,7 @@ export async function ensureTile(
 
   try {
     await access(cachePathEmpty, constants.F_OK);
-    return false;
+    return true;
   } catch (err) {
     if (!(err instanceof Error && "code" in err && err.code === "ENOENT")) {
       throw err;
