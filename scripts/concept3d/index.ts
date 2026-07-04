@@ -47,21 +47,22 @@ const stack = Object.entries(starts).map(async ([name, [lat, long]]) => {
   return isEmpty ? null : point;
 });
 
+const printStats = () =>
+  `\rvisited: ${count} | empty: ${empty} | stack: ${stack.length}`.padEnd(80);
+
 let next;
 while ((next = stack.pop())) {
-  process.stderr.write(
-    `\rvisited: ${count} | empty: ${empty} | stack: ${stack.length}`.padEnd(80),
-  );
+  process.stderr.write(printStats());
   const point = await next;
   if (!point) {
     empty++;
     continue;
   }
   for (const [dx, dy] of [
-    [-1, -1],
-    [1, -1],
-    [-1, 1],
-    [1, 1],
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
   ]) {
     const neighbor = { x: point.x + dx, y: point.y + dy };
     if (!added.has(`${neighbor.x}, ${point.y}`)) {
@@ -75,3 +76,5 @@ while ((next = stack.pop())) {
     }
   }
 }
+
+console.log(printStats());
