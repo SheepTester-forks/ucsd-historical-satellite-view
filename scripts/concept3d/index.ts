@@ -65,8 +65,8 @@ while ((next = stack.pop())) {
     [0, 1],
   ]) {
     const neighbor = { x: point.x + dx, y: point.y + dy };
-    if (!added.has(`${neighbor.x}, ${point.y}`)) {
-      added.add(`${neighbor.x}, ${point.y}`);
+    if (!added.has(`${neighbor.x}, ${neighbor.y}`)) {
+      added.add(`${neighbor.x}, ${neighbor.y}`);
       count++;
       stack.push(
         ensureTile(tileSet, zoom, neighbor).then((empty) =>
