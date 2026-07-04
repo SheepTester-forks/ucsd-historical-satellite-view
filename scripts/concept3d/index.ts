@@ -12,7 +12,9 @@
  * - node scripts/concept3d/index.ts 1005_BuildingLabels_69fce9d8df886 20
  */
 
+import { mkdir, writeFile } from "node:fs/promises";
 import { ensureTile, latLngToTile } from "./lib.ts";
+import { join } from "node:path";
 
 if (process.argv.length < 4) {
   console.error(`usage: node scripts/concept3d/index.ts <tileset> <zoom>`);
@@ -32,46 +34,51 @@ const starts: Record<string, [lat: number, long: number]> = {
   "East Campus Medical Center": [32.776609103331246, -117.05706916634533],
 };
 
-const added = new Set<`${number}, ${number}`>();
+const added: Record<number, Set<number>> = {};
 let count = 0;
-let empty = 0;
+const emptyCells = new Set<`${number}, ${number}`>();
 
 const stack = Object.entries(starts).map(async ([name, [lat, long]]) => {
   const point = latLngToTile(lat, long, zoom);
-  added.add(`${point.x}, ${point.y}`);
+  added[point.x] ??= new Set();
+  added[point.x].add(point.y);
   count++;
   const isEmpty = await ensureTile(tileSet, zoom, point);
   if (isEmpty) {
     console.warn(`warn: start point '${name}' is empty`);
   }
-  return isEmpty ? null : point;
+  return { ...point, isEmpty };
 });
 
 const printStats = () =>
-  `\rvisited: ${count} | empty: ${empty} | stack: ${stack.length}`.padEnd(80);
+  `\rvisited: ${count} | empty: ${emptyCells.size} | stack: ${stack.length}`.padEnd(
+    80,
+  );
 
 let next;
 while ((next = stack.pop())) {
   process.stderr.write(printStats());
   const point = await next;
-  if (!point) {
-    empty++;
+  if (point.isEmpty) {
+    emptyCells.add(`${point.x}, ${point.y}`);
     continue;
   }
   for (const dx of [-1, 0, 1]) {
     for (const dy of [-1, 0, 1]) {
       const manDist = Math.abs(dx) + Math.abs(dy);
-      if (manDist < 1) {
+      if (manDist !== 1) {
         continue;
       }
       const neighbor = { x: point.x + dx, y: point.y + dy };
-      if (!added.has(`${neighbor.x}, ${neighbor.y}`)) {
-        added.add(`${neighbor.x}, ${neighbor.y}`);
+      if (!added[neighbor.x]?.has(neighbor.y)) {
+        added[neighbor.x] ??= new Set();
+        added[neighbor.x].add(neighbor.y);
         count++;
         stack.push(
-          ensureTile(tileSet, zoom, neighbor).then((empty) =>
-            empty ? null : neighbor,
-          ),
+          ensureTile(tileSet, zoom, neighbor).then((isEmpty) => ({
+            ...neighbor,
+            isEmpty,
+          })),
         );
       }
     }
@@ -79,3 +86,27 @@ while ((next = stack.pop())) {
 }
 
 console.log(printStats());
+
+const bounds = Object.entries(added)
+  .values()
+  .map(([x, ys]) => ({ x: +x, ys }))
+  .flatMap(({ x, ys }) => ys.values().map((y) => ({ x, y })))
+  .reduce(
+    (cum, curr) => ({
+      minX: Math.min(cum.minX, curr.x),
+      maxX: Math.max(cum.maxX, curr.x),
+      minY: Math.min(cum.minY, curr.y),
+      maxY: Math.max(cum.maxY, curr.y),
+    }),
+    { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity },
+  );
+let str = "";
+for (let y = bounds.maxY; y >= bounds.minY; y--) {
+  let line = "";
+  for (let x = bounds.minX; x <= bounds.maxX; x++) {
+    line += added[x]?.has(y) ? (emptyCells.has(`${x}, ${y}`) ? "." : "#") : " ";
+  }
+  str += line.trimEnd() + "\n";
+}
+await mkdir(join("scripts", "concept3d", "reports"), { recursive: true });
+await writeFile(join("scripts", "concept3d", "reports", `${tileSet}.txt`), str);
